@@ -34,7 +34,7 @@ public class FeedsTasksFragment extends Fragment{
   protected Account user;
 
   VKRequest newsFeedRequest;
-  private static final int VKREQUEST_FEEDS_COUNT = 10;
+  private static final int VKREQUEST_FEEDS_COUNT = 50;
 
   private static final String TAG = "FeedsTasksFragment";
 
