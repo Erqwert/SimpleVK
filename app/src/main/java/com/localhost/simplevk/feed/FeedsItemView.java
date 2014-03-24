@@ -1,6 +1,7 @@
 package com.localhost.simplevk.feed;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -86,12 +87,35 @@ public class FeedsItemView extends RelativeLayout {
 
   }
 
-  private void setFeedDate(TextView textView, long date){
+  private void setFeedDate(TextView textView, long unixTime){
     // Todo show smart date compared to time passed
     // Сегодня в хх хх, Вчера в хх хх, 22 марта в хх хх итд
-    long dv = date*1000;
-    Date df = new Date(dv);
-    textView.setText(new SimpleDateFormat("MM dd, yyyy hh:mma").format(df));
+
+    long dateTimeInMillis = unixTime*1000;
+    int DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+
+    // If date is today
+    if(DateUtils.isToday(dateTimeInMillis)){
+      Date date = new Date(dateTimeInMillis);
+      textView.setText("Сегодня в "+new SimpleDateFormat("HH:mm").format(date));
+    }
+
+//    // If date is yerterday
+//    Calendar c1 = Calendar.getInstance(); // today
+//    c1.add(Calendar.DAY_OF_YEAR, -1); // yesterday
+//
+//    Calendar c2 = Calendar.getInstance();
+//    c2.setTimeInMillis(dateTimeInMillis); // date to check
+//
+//    if (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
+//      && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)) {
+//      Date date = new Date(dateTimeInMillis);
+//      textView.setText("Вчера в "+new SimpleDateFormat("hh:mm").format(date));
+//    }
+
+//    long dv = unixTime*1000;
+//    Date df = new Date(dv);
+//    textView.setText(new SimpleDateFormat("MM dd, yyyy hh:mma").format(df));
   }
 
   private void setFeedText(TextView textView, String text){
