@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="actionbar_text">#FFFFFF</color>
+  <color name="actionbar_background">#4d75a3</color>
+
+  <color name="window_background">#E7E7E7</color>
+
+  <color name="Black">#000000</color>
+  <color name="White">#FFFFFF</color>
+  <color name="authEditTextHintColor">#808080</color>
+
+  <color name="feed_footerDivider">#F1F1F1</color>
+
+</resources>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:paddingTop="5dp"
+  android:paddingLeft="5dp"
+  android:paddingRight="5dp"
+  android:layout_margin="5dp"
+  android:background="@color/White">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/feed_llHeader">
+
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/ic_anabolism"
+      android:id="@+id/feed_ivAvatar"/>
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_marginLeft="10dp"
+      android:layout_marginTop="8dp"
+      android:gravity="left">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ANABOLISM"
+        android:textSize="18sp"
+        android:id="@+id/feed_tvName" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20 минут назад"
+        android:textColor="@color/authEditTextHintColor"
+        android:textSize="13sp"
+        android:id="@+id/feed_tvDate" />
+    </LinearLayout>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/feed_llBody"
+    android:layout_below="@+id/feed_llHeader">
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:id="@+id/feed_tvText"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/feed_llFooter"
+    android:layout_below="@+id/feed_llBody">
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:layout_marginLeft="2dp"
+      android:layout_marginRight="2dp"
+      android:layout_marginTop="10dp"
+      android:background="@color/feed_footerDivider" />
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="2dp"
+      android:orientation="horizontal">
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/feed_llComments">
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:src="@drawable/comments"
+          android:scaleX="0.5"
+          android:scaleY="0.5"
+          android:id="@+id/feed_ivCommentIcon"/>
+
+        <TextView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:paddingBottom="3dp"
+          android:text="192"
+          android:id="@+id/feed_tvCommentsCount"/>
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/feed_llLikes"
+        android:layout_alignParentRight="true">
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:src="@drawable/like"
+          android:scaleX="0.5"
+          android:scaleY="0.5"
+          android:id="@+id/feed_ivLikeIcon"
+          />
+
+        <TextView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:text="192"
+          android:id="@+id/feed_tvLikesCount"/>
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/feed_llReposts"
+        android:layout_toLeftOf="@id/feed_llLikes">
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:scaleX="0.5"
+          android:scaleY="0.5"
+          android:src="@drawable/repost"
+          android:id="@+id/feed_ivRepostIcon"
+          />
+
+        <TextView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:layout_width="40dp"
+          android:text="192"
+          android:id="@+id/feed_tvRepostsCount"/>
+
+      </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+
+  </LinearLayout>
+
+
+</RelativeLayout>

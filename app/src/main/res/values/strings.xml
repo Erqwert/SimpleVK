@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SimpleVK</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+  <string name="app_name">SimpleVK</string>
+
+  <string name="auth_title">Авторизация</string>
+
+
+  <string name="auth_LoginButtonText">Войти</string>
+  <string name="auth_LoginEditTextHint">Email или номер телефона</string>
+  <string name="auth_PasswordEditTextHint">Пароль</string>
+
+  <string name="actionFeed_fragment_logout">Выйти</string>
 
 </resources>

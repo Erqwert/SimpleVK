@@ -1,0 +1,38 @@
+<resources>
+
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
+    <item name="android:windowBackground">@color/window_background</item>
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowTitleSize">0dp</item>
+  </style>
+
+  <style name="AppTheme.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <item name="android:background">@drawable/actionbar_background</item>
+    <item name="android:titleTextStyle">@style/AppTheme.ActionBar.TitleTextStyle</item>
+    <item name="android:actionMenuTextColor">@color/actionbar_text</item>
+  </style>
+
+  <style name="AppTheme.ActionBar.TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <item name="android:textColor">@color/actionbar_text</item>
+  </style>
+
+  <style name="AppTheme.TextView"/>
+
+  <style name="AppTheme.TextView.FeedsItemFooterCounts">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textSize">12sp</item>
+    <item name="android:textColor">@color/authEditTextHintColor</item>
+    <item name="android:layout_gravity">center_vertical</item>
+  </style>
+
+  <style name="AppTheme.ImageView"/>
+
+  <style name="AppTheme.ImageView.FeedsItemFooterIcons">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+  </style>
+
+
+</resources>
