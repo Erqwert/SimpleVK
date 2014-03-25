@@ -31,7 +31,7 @@ import java.lang.reflect.*;
 /**
  * Collection of helpers to parse server responses.
  */
-class ParseUtils {
+public class ParseUtils {
 
     private ParseUtils() {
     }

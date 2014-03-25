@@ -99,12 +99,16 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     }
   }
 
+  /**
+   * Saving current state to Bundle so after configuration change we load fragment we was on before.
+   * @param outState Bundle
+   */
   @Override
   protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
     outState.putBoolean(IS_AFTER_CONFIGURATION_CHANGED_TAG, true);
     outState.putInt(FRAGMENT_BEFORE_CONFIGURATION_CHANGED_TAG, currentFragmentId);
     outState.putSerializable(SAVED_STATE_TAG, savedStateMap);
-    super.onSaveInstanceState(outState);
   }
 
   /**
@@ -121,7 +125,7 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
       if(destinationFragment==null){
         destinationFragment = appFragmentFactory.newFragmentById(fragmentId);
-        Log.i(TAG, "destinationFragment=null, creating new fragment "+currentFragmentId);
+        Log.i(TAG, "destinationFragment=null, creating new fragment "+appFragmentFactory.assignTAG(currentFragmentId));
         //if(destinationFragment instanceof AuthenticationFragment_){
           //destinationFragment.setInitialSavedState(getFragmentSavedState(destinationFragment.getClass().getSimpleName()));
           //Log.i(TAG, "Set initial state for "+destinationFragment.getClass().getSimpleName());
@@ -136,7 +140,7 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
         fragmentManager.beginTransaction()
           .show(destinationFragment)
           .commit();
-        Log.i(TAG, "destinationFragment is already added, showing fragment "+currentFragmentId);
+        Log.i(TAG, "destinationFragment is already added, showing fragment "+appFragmentFactory.assignTAG(currentFragmentId));
       }
       if(destinationFragment instanceof AuthenticationFragment_) {
         ((AuthenticationFragment_) destinationFragment).setVkSdkListener(vkSdkListener);
@@ -156,7 +160,8 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
   }
 
   /**
-   * VKSdkListener initialization
+   * VKSdkListener initialization. On AuthOK we load FeedsFragment and save access_toke to
+   * SharedPreferences
    */
   private void initVKSdkListener(){
     vkSdkListener = new VKSdkListener() {
@@ -186,11 +191,14 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
         getSupportActionBar().show();
         token.saveTokenToSharedPreferences(getApplicationContext(), VK_SDK_ACCESS_TOKEN_PREF_KEY);
         goToFragment(R.id.fragment_feeds);
-        Log.i("TestAuthFragment", "Auth OK! token: "+token.accessToken+" user_id: "+token.userId);
+        Log.i("MainActivity", "Auth OK! token: "+token.accessToken+" user_id: "+token.userId);
       }
     };
   }
 
+  /**
+   * On logout we hide back ActionBar and load AuthenticationFragment
+   */
   @Override
   public void onLogout() {
     getSupportActionBar().hide();
@@ -225,6 +233,10 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     }
   }
 
+  /**
+   * Callback metod - after we got feeds from asyncTask - we update UI.
+   * @param vkFeeds
+   */
   @Override
   public void onVKResponseParsed(ArrayList<VKFeed> vkFeeds) {
     Fragment feedsFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);

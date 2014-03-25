@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:paddingTop="5dp"
@@ -12,6 +13,7 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="3dp"
     android:orientation="horizontal"
     android:id="@+id/feed_llHeader">
 
@@ -33,6 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ANABOLISM"
+        android:maxLines="1"
         android:textSize="18sp"
         android:id="@+id/feed_tvName" />
 
@@ -49,7 +52,9 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginLeft="3dp"
+    android:layout_marginRight="3dp"
     android:orientation="vertical"
     android:id="@+id/feed_llBody"
     android:layout_below="@+id/feed_llHeader">
@@ -58,17 +63,87 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:visibility="gone"
-      android:autoLink="all"
+      android:autoLink="web"
+      android:textColorLink="@color/feed_tvTextLinkColor"
       android:linksClickable="true"
+      android:maxLines="8"
       android:id="@+id/feed_tvText"/>
+
   </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:orientation="vertical"
+    android:visibility="gone"
+    android:id="@+id/feed_llPhotoAttachments"
+    android:layout_below="@+id/feed_llBody">
+
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:id="@+id/feed_iv1stPhotoAttachment"/>
+
+    <android.support.v7.widget.GridLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:columnCount="5"
+      app:rowCount="1"
+      android:id="@+id/feed_glPhotoAttachments"
+      />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:visibility="gone"
+    android:id="@+id/feed_llLinkAttachments"
+    android:layout_below="@+id/feed_llPhotoAttachments">
+
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:scaleType="matrix"
+      android:scaleX="0.6"
+      android:scaleY="0.6"
+      android:adjustViewBounds="true"
+      android:src="@drawable/link"
+      android:id="@+id/feed_ivLinkIcon"/>
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_gravity="center_vertical">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:id="@+id/feed_tvLinkName" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textColor="@color/authEditTextHintColor"
+        android:textSize="13sp"
+        android:id="@+id/feed_tvLinkURL" />
+    </LinearLayout>
+  </LinearLayout>
+
+
 
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/feed_llFooter"
-    android:layout_below="@+id/feed_llBody">
+    android:layout_below="@+id/feed_llLinkAttachments">
 
     <View
       android:layout_width="match_parent"
@@ -140,7 +215,7 @@
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
           android:scaleX="0.5"
           android:scaleY="0.5"
-          android:src="@drawable/repost"
+          android:src="@drawable/reposts"
           android:id="@+id/feed_ivRepostIcon"
           />
 

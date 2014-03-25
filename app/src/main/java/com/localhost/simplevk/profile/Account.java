@@ -14,14 +14,11 @@ public class Account {
 
   private static final String TAG = "Account";
 
-
-
   private SharedPreferences user;
 
   public static SharedPreferences getUserDataSharedPreferences(Context context)
   {
     return context.getSharedPreferences("account", Context.MODE_PRIVATE);
   }
-
 
 }

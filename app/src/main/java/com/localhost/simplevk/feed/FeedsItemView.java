@@ -1,17 +1,20 @@
 package com.localhost.simplevk.feed;
 
 import android.content.Context;
+import android.support.v7.widget.GridLayout;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.localhost.simplevk.R;
 import com.localhost.simplevk.vk.VKFeed;
-import com.localhost.simplevk.vk.VKLike;
-import com.localhost.simplevk.vk.VKSource;
 import com.squareup.picasso.Picasso;
+import com.vk.sdk.api.model.VKApiLink;
+import com.vk.sdk.api.model.VKApiPhoto;
+import com.vk.sdk.api.model.VKAttachments;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
@@ -48,6 +51,27 @@ public class FeedsItemView extends RelativeLayout {
   @ViewById
   protected ImageView feed_ivLikeIcon;
 
+  @ViewById
+  protected ImageView feed_iv1stPhotoAttachment;
+
+  @ViewById
+  protected LinearLayout feed_llPhotoAttachments;
+
+  @ViewById
+  protected GridLayout feed_glPhotoAttachments;
+
+  @ViewById
+  protected LinearLayout feed_llLinkAttachments;
+
+  @ViewById
+  protected TextView feed_tvLinkName;
+
+  @ViewById
+  protected TextView feed_tvLinkURL;
+
+  @ViewById
+  protected LinearLayout feed_llFooter;
+
   public FeedsItemView(Context context) {
     super(context);
     this.context=context;
@@ -63,65 +87,104 @@ public class FeedsItemView extends RelativeLayout {
     this.context=context;
   }
 
+  /**
+   * We set UI of each Feed here. Setting icons, names, texts, counts, photos etc.
+   * @param vkFeed
+   */
   public void bind(VKFeed vkFeed) {
-    VKSource vkSource = vkFeed.getVkSource();
+    // Header
+
     // Set avatar from URL
-    Picasso.with(context).load(vkSource.getAvatar100URL()).into(feed_ivAvatar);
+    Picasso.with(context).load(vkFeed.source_avatar100URL).into(feed_ivAvatar);
     // Set group/user name
-    feed_tvName.setText(vkSource.getName());
+    feed_tvName.setText(vkFeed.source_name);
+
+
+    // Body
 
     // Set feed date
-    setFeedDate(feed_tvDate, vkFeed.getDate());
+    setFeedDate(feed_tvDate, vkFeed.date);
     // Set feed text
-    setFeedText(feed_tvText, vkFeed.getText());
-    // Set feed's comments count
-    feed_tvCommentsCount.setText(String.valueOf(vkFeed.getVkComment().getComments_count()));
-    // Set feed's reposts count
-    feed_tvRepostsCount.setText(String.valueOf(vkFeed.getVkRepost().getReposts_count()));
+    setFeedText(feed_tvText, vkFeed.text);
+    // Set attachments
+    if(null != vkFeed.attachments) {
+      setAttachments(vkFeed.attachments);
+    }
+    // Footer
 
+    // Set feed's comments count
+    feed_tvCommentsCount.setText(String.valueOf(vkFeed.comments_count));
+    // Set feed's reposts count
+    feed_tvRepostsCount.setText(String.valueOf(vkFeed.reposts_count));
     // Set feed's likes count
-    VKLike vkLike = vkFeed.getVkLike();
-    feed_tvLikesCount.setText(String.valueOf(vkLike.getLikes_count()));
+    feed_tvLikesCount.setText(String.valueOf(vkFeed.likes_count));
     // Set liked icon
-    feed_ivLikeIcon.setImageResource(vkLike.isLiked() ? R.drawable.liked : R.drawable.like);
+    feed_ivLikeIcon.setImageResource(vkFeed.user_likes ? R.drawable.liked : R.drawable.like);
 
   }
 
+  /**
+   * Print date same as native Android VK APP (not complete)
+   * @param textView
+   * @param unixTime
+   */
   private void setFeedDate(TextView textView, long unixTime){
     // Todo show smart date compared to time passed
     // Сегодня в хх хх, Вчера в хх хх, 22 марта в хх хх итд
+    // int DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
     long dateTimeInMillis = unixTime*1000;
-    int DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
     // If date is today
     if(DateUtils.isToday(dateTimeInMillis)){
       Date date = new Date(dateTimeInMillis);
       textView.setText("Сегодня в "+new SimpleDateFormat("HH:mm").format(date));
     }
-
-//    // If date is yerterday
-//    Calendar c1 = Calendar.getInstance(); // today
-//    c1.add(Calendar.DAY_OF_YEAR, -1); // yesterday
-//
-//    Calendar c2 = Calendar.getInstance();
-//    c2.setTimeInMillis(dateTimeInMillis); // date to check
-//
-//    if (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
-//      && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)) {
-//      Date date = new Date(dateTimeInMillis);
-//      textView.setText("Вчера в "+new SimpleDateFormat("hh:mm").format(date));
-//    }
-
-//    long dv = unixTime*1000;
-//    Date df = new Date(dv);
-//    textView.setText(new SimpleDateFormat("MM dd, yyyy hh:mma").format(df));
   }
 
+  /**
+   * Sets Feed's body text and make it VISIBLE if needed
+   * @param textView
+   * @param text
+   */
   private void setFeedText(TextView textView, String text){
-    // Todo shorten text if it's too large + parse URLs
+    // Todo shorten text if it's too large
     textView.setVisibility(text.equals("") ? GONE : VISIBLE);
     textView.setText(text);
   }
 
+  /**
+   * Set and display Feed's attachments (no complete)
+   * @param attachments
+   */
+  private void setAttachments(VKAttachments attachments){
+    boolean has1stPhoto = false;
+    boolean hasLink = false;
+    for(VKAttachments.VKApiAttachment attachment : attachments){
+
+      switch(attachment.getType()){
+        case VKAttachments.TYPE_PHOTO:
+          if(!has1stPhoto){
+            Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).into(feed_iv1stPhotoAttachment);
+            feed_llPhotoAttachments.setVisibility(VISIBLE);
+            has1stPhoto = true;
+          }
+          break;
+        case VKAttachments.TYPE_LINK:
+          if(!hasLink) {
+            feed_tvLinkName.setText(((VKApiLink) attachment).title);
+            String url = ((VKApiLink) attachment).url;
+            if (url.contains("http://")) {
+              url = url.replace("http://", "");
+            } else if (url.contains("https://")) {
+              url = url.replace("https://", "");
+            }
+            feed_tvLinkURL.setText(url);
+            feed_llLinkAttachments.setVisibility(VISIBLE);
+            hasLink = true;
+          }
+          break;
+      }
+    }
+  }
 }

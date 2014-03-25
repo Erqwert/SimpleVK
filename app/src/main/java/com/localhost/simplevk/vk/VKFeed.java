@@ -1,80 +1,224 @@
 package com.localhost.simplevk.vk;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class VKFeed implements Serializable{
+import com.vk.sdk.api.model.ParseUtils;
+import com.vk.sdk.api.model.VKApiPlace;
+import com.vk.sdk.api.model.VKAttachments;
 
-  public void setPost_id(int post_id) {
-    this.post_id = post_id;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class VKFeed implements Parcelable{
+
+  public VKFeed(){
+
   }
 
-  public void setDate(long date) {
-    this.date = date;
+  /**
+   * Name of source (user or group)
+   */
+  public String source_name;
+
+  /**
+   * Link to avatar 50x50 of source (user or group)
+   */
+  public String source_avatar50URL;
+
+  /**
+   * Link to avatar 100x100 of source (user or group)
+   */
+  public String source_avatar100URL;
+
+  /**
+   * ID of user or group
+   */
+  public int source_id;
+
+  /**
+   * ID of post from user or group wall
+   */
+  public int post_id;
+
+  /**
+   * Date (in Unix time) the post was added.
+   */
+  public long date;
+
+  /**
+   * Text of the post.
+   */
+  public String text;
+
+  /**
+   * Number of comments.
+   */
+  public int comments_count;
+
+  /**
+   * Whether the current user can leave comments to the post (false — cannot, true — can)
+   */
+  public boolean can_post_comment;
+
+  /**
+   * Number of users who liked the post.
+   */
+  public int likes_count;
+
+  /**
+   * Whether the user liked the post (false — not liked, true — liked)
+   */
+  public boolean user_likes;
+
+  /**
+   * Whether the user can like the post (false — cannot, true — can).
+   */
+  public boolean can_like;
+
+  /**
+   * Whether the user can reposts (false — cannot, true — can).
+   */
+  public boolean can_publish;
+
+  /**
+   * Number of users who copied the post.
+   */
+  public int reposts_count;
+
+  /**
+   * Whether the user reposted the post (false — not reposted, true — reposted).
+   */
+  public boolean user_reposted;
+
+  /**
+   * Type of the post, can be: post, copy, reply, postpone, suggest.
+   */
+  public String post_type;
+
+  /**
+   * Information about attachments to the post (photos, links, etc.), if any;
+   */
+  public VKAttachments attachments = new VKAttachments();
+
+  /**
+   * Information about location.
+   */
+  public VKApiPlace geo;
+
+  /**
+   * List of history of the reposts.
+   */
+  // todo check copy history
+  //public VKList<VKApiPost> copy_history;
+
+  /**
+   * Fills a Post instance from JSONObject.
+   */
+
+  /**
+   * Setter for vkSourse
+   * @param vkSource
+   */
+  public void setSourceData(VKSource vkSource){
+    source_id = vkSource.getId();
+    source_name = vkSource.getName();
+    source_avatar50URL = vkSource.getAvatar50URL();
+    source_avatar100URL = vkSource.getAvatar100URL();
   }
 
-  public void setText(String text) {
-    this.text = text;
+
+
+  public VKFeed parse(JSONObject source) throws JSONException {
+    source_id = source.optInt("source_id");
+    post_id = source.optInt("post_id");
+    date = source.optLong("date");
+    text = source.optString("text");
+    JSONObject comments = source.optJSONObject("comments");
+    if(comments != null) {
+      comments_count = comments.optInt("count");
+      can_post_comment = ParseUtils.parseBoolean(comments, "can_post");
+    }
+    JSONObject likes = source.optJSONObject("likes");
+    if(likes != null) {
+      likes_count = likes.optInt("count");
+      user_likes = ParseUtils.parseBoolean(likes, "user_likes");
+      can_like = ParseUtils.parseBoolean(likes, "can_like");
+      can_publish = ParseUtils.parseBoolean(likes, "can_publish");
+    }
+    JSONObject reposts = source.optJSONObject("reposts");
+    if(reposts != null) {
+      reposts_count = reposts.optInt("count");
+      user_reposted = ParseUtils.parseBoolean(reposts, "user_reposted");
+    }
+    post_type = source.optString("post_type");
+    attachments.fill(source.optJSONArray("attachments"));
+    JSONObject geo = source.optJSONObject("geo");
+    if(geo != null) {
+      this.geo = new VKApiPlace().parse(geo);
+    }
+    //copy_history = new VKList<VKApiPost>(source.optJSONArray("copy_history"), VKApiPost.class);
+    return this;
   }
 
-  public int getPost_id() {
-
-    return post_id;
+  /**
+   * Creates a Post instance from Parcel.
+   */
+  public VKFeed(Parcel in) {
+    this.source_id = in.readInt();
+    this.source_name = in.readString();
+    this.source_avatar50URL = in.readString();
+    this.source_avatar100URL = in.readString();
+    this.post_id = in.readInt();
+    this.date = in.readLong();
+    this.text = in.readString();
+    this.comments_count = in.readInt();
+    this.can_post_comment = in.readByte() != 0;
+    this.likes_count = in.readInt();
+    this.user_likes = in.readByte() != 0;
+    this.can_like = in.readByte() != 0;
+    this.can_publish = in.readByte() != 0;
+    this.reposts_count = in.readInt();
+    this.user_reposted = in.readByte() != 0;
+    this.post_type = in.readString();
+    this.attachments = in.readParcelable(VKAttachments.class.getClassLoader());
+    this.geo = in.readParcelable(VKApiPlace.class.getClassLoader());
   }
 
-  public long getDate() {
-    return date;
+  @Override
+  public int describeContents() {
+    return 0;
   }
 
-  public String getText() {
-    return text;
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    dest.writeInt(this.source_id);
+    dest.writeString(this.source_name);
+    dest.writeString(source_avatar50URL);
+    dest.writeString(source_avatar100URL);
+    dest.writeInt(this.post_id);
+    dest.writeLong(this.date);
+    dest.writeString(this.text);
+    dest.writeInt(this.comments_count);
+    dest.writeByte(can_post_comment ? (byte) 1 : (byte) 0);
+    dest.writeInt(this.likes_count);
+    dest.writeByte(user_likes ? (byte) 1 : (byte) 0);
+    dest.writeByte(can_like ? (byte) 1 : (byte) 0);
+    dest.writeByte(can_publish ? (byte) 1 : (byte) 0);
+    dest.writeInt(this.reposts_count);
+    dest.writeByte(user_reposted ? (byte) 1 : (byte) 0);
+    dest.writeString(this.post_type);
+    dest.writeParcelable(attachments, flags);
+    dest.writeParcelable(this.geo, flags);
   }
 
-  // post_id on user/group wall
-  private int post_id;
-  // Date of post, taken from items
-  private long date;
-  // Text body, taken from items
-  private String text;
+  public static Parcelable.Creator<VKFeed> CREATOR = new Parcelable.Creator<VKFeed>() {
+    public VKFeed createFromParcel(Parcel source) {
+      return new VKFeed(source);
+    }
 
-  private VKSource vkSource;
-  private VKLike vkLike;
-  private VKRepost vkRepost;
-  private VKComment vkComment;
-  //private VKFeed vkFeed_repost;
-
-  public void setVkComment(VKComment vkComment) {
-    this.vkComment = vkComment;
-  }
-
-  public VKComment getVkComment() {
-
-    return vkComment;
-  }
-
-  public void setVkRepost(VKRepost vkRepost) {
-    this.vkRepost = vkRepost;
-  }
-
-  public VKRepost getVkRepost() {
-
-    return vkRepost;
-  }
-
-  public VKLike getVkLike() {
-    return vkLike;
-  }
-
-  public void setVkLike(VKLike vkLike) {
-
-    this.vkLike = vkLike;
-  }
-
-  public void setVkSource(VKSource vkSource) {
-    this.vkSource = vkSource;
-  }
-
-  public VKSource getVkSource() {
-
-    return vkSource;
-  }
+    public VKFeed[] newArray(int size) {
+      return new VKFeed[size];
+    }
+  };
 }

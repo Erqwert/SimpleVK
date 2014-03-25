@@ -10,5 +10,6 @@
   <color name="authEditTextHintColor">#808080</color>
 
   <color name="feed_footerDivider">#F1F1F1</color>
+  <color name="feed_tvTextLinkColor">#000080</color>
 
 </resources>

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +40,8 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   @Bean
   protected FeedListAdapter feedListAdapter;
 
+  private static final String FEED_BUNDLE_TAG = "FEED_BUNDLE";
+
   private FeedsTasksFragment feedsTasksFragment;
   private static final String FEED_TASKS_FRAGMENT_TAG = "FRAGMENT_FEED_TASKS";
 
@@ -48,6 +49,11 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
   ArrayList<VKFeed> vkFeeds;
 
+  /**
+   * After user Pulls Pull-to-refresh - we launch a background task to get Feeds or
+   * show toast with error if network is unavailable.
+   * @param view
+   */
   @Override
   public void onRefreshStarted(View view) {
     if(Utils.isNetworkAvailable(getActivity())){
@@ -62,26 +68,49 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
     void onLogout();
   }
 
+  /**
+   * Setting callbacks to activity
+   * @param activity
+   */
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
     feedFragmentCallbacks = (FeedFragmentCallbacks) activity;
   }
 
+  /**
+   * Removing activity callbacks onDetach()
+   */
   @Override
   public void onDetach() {
     super.onDetach();
     feedFragmentCallbacks = null;
   }
 
+  /**
+   * Here we set Logout Action Item on
+   */
   @AfterViews
   protected void init(){
     setHasOptionsMenu(true);
-    //todo init list view (load cached data if exists)
   }
 
+  /**
+   * Here we cache Feeds to Bundle for screen rotation etc.
+   * @param outState
+   */
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putParcelableArrayList(FEED_BUNDLE_TAG, vkFeeds);
+  }
 
-
+  /**
+   * Setting retain fragment for Background tasks, initializing Pull-to-refresh and
+   * load cached Feeds if available (for example after screen rotation) or initiating
+   * fresh Feeds load
+   * @param savedInstanceState
+   */
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
@@ -97,9 +126,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       fm.beginTransaction()
         .add(feedsTasksFragment, FEED_TASKS_FRAGMENT_TAG)
         .commit();
-      Log.i("boom", "PoliciesTask fragment created.");
-    }else{
-      Log.i("boom", "PoliciesTask fragment retained.");
+
     }
 
     ActionBarPullToRefresh.from(getActivity())
@@ -107,11 +134,20 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       .listener(this)
       .setup(feed_pullToRefreshLayout);
 
-    initAdapter();
+    if(null != savedInstanceState){
+      vkFeeds = savedInstanceState.getParcelableArrayList(FEED_BUNDLE_TAG);
+      feed_ListView.setAdapter(feedListAdapter);
+      feedListAdapter.setVkFeeds(vkFeeds);
+    }else {
+      initAdapter();
+    }
   }
 
+  /**
+   * Starts Background task for Feeds download and display
+   */
   public void initAdapter(){
-    if(Utils.isNetworkAvailable(getActivity()) /* todo add cache check !cacheNotAvailable */){
+    if(Utils.isNetworkAvailable(getActivity())){
       feedsTasksFragment.getFeeds();
     }
   }
@@ -122,6 +158,12 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
     super.onCreateOptionsMenu(menu, inflater);
   }
 
+  /**
+   * Logout implementation. Calling MainActivity's onLogout as long as VKSdk.logout (this
+   * removes access_token from SharedPreferences so we can log as another user).
+   * @param item
+   * @return
+   */
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
@@ -135,6 +177,10 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
     }
   }
 
+  /**
+   * Updating UI by setting adapter and stopping refreshing animation.
+   * @param vkFeeds
+   */
   @UiThread
   public void processVKResponseParsedResult(ArrayList<VKFeed> vkFeeds){
     // Check list for null
@@ -148,11 +194,6 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
     feed_ListView.setAdapter(feedListAdapter);
     feedListAdapter.setVkFeeds(vkFeeds);
-
-//    // todo Cache list to userdata
-//    if(null!=getActivity() && null!=items){
-//      userdata.saveCalculationsList(getActivity(), items);
-//    }
 
 //    if(progressBar!=null){
 //      lvCalc_list.removeHeaderView(progressBar);

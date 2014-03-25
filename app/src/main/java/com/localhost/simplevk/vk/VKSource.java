@@ -1,19 +1,31 @@
 package com.localhost.simplevk.vk;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class VKSource implements Serializable {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class VKSource implements Parcelable {
+
+  /**
+   * ID of user or group
+   */
   private int id;
+  /**
+   * name of user or group
+   */
   private String name;
+  /**
+   * 50x50 avatar URL
+   */
   private String avatar50URL;
+  /**
+   * 100x100 avatar URL
+   */
   private String avatar100URL;
 
-  public void setAvatar100URL(String avatar100URL) {
-    this.avatar100URL = avatar100URL;
-  }
-
   public String getAvatar100URL() {
-
     return avatar100URL;
   }
 
@@ -29,16 +41,45 @@ public class VKSource implements Serializable {
     return avatar50URL;
   }
 
-  public void setId(int id) {
+  /**
+   * Parse JSON method
+   * @param source
+   * @return
+   * @throws JSONException
+   */
+  public VKSource parse(JSONObject source) throws JSONException {
+    id = source.optInt("id");
 
-    this.id = id;
+    String jsonName = source.optString("name", "");
+    if(!jsonName.equals("")) {
+      name = source.optString("name");
+    }else{
+      name = source.optString("first_name")+" "+source.optString("last_name");
+    }
+
+    avatar50URL = source.optString("photo_50");
+    avatar100URL = source.optString("photo_100");
+    return this;
   }
 
-  public void setName(String name) {
-    this.name = name;
+
+  @Override
+  public int describeContents() {
+    return 0;
   }
 
-  public void setAvatar50URL(String avatar50URL) {
-    this.avatar50URL = avatar50URL;
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    dest.writeInt(this.id);
+    dest.writeString(this.name);
+    dest.writeString(avatar50URL);
+    dest.writeString(avatar100URL);
+  }
+
+  public VKSource(Parcel in) {
+    this.id = in.readInt();
+    this.name = in.readString();
+    this.avatar50URL = in.readString();
+    this.avatar100URL = in.readString();
   }
 }

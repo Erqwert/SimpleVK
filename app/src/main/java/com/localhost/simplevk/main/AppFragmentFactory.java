@@ -10,6 +10,12 @@ import org.androidannotations.annotations.EBean;
 
 @EBean
 public class AppFragmentFactory {
+
+  /**
+   * Creates new Fragment by ID
+   * @param fragmentId
+   * @return
+   */
   public Fragment newFragmentById(int fragmentId) {
     switch (fragmentId) {
       case R.id.fragment_feeds:
@@ -21,6 +27,11 @@ public class AppFragmentFactory {
     }
   }
 
+  /**
+   * Assigns TAG to Fragment by ID
+   * @param fragmentId
+   * @return
+   */
   public String assignTAG(int fragmentId){
     switch(fragmentId){
       case R.id.fragment_feeds:

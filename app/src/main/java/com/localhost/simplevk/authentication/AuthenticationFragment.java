@@ -23,16 +23,22 @@ import java.net.URLEncoder;
 public class AuthenticationFragment extends Fragment{
 
   private static final String APP_ID = "4255934";
-  //private static final String REDIRECT_URL = "http://oauth.vk.com/blank.html";
   private static final String REDIRECT_URL = "http://oauth.vk.com/blank.html";
   private static final String SCOPE = "friends,wall,offline";
 
   protected WebView webView;
 
-  //private FragmentSavedState fragmentSavedStateCallback;
-
   VKSdkListener vkSdkListener;
 
+  /**
+   * Dynamically adding WebView to container.
+   * If we loaded after configuration change - we restore cached page contents from Bundle
+   * or loadURL otherwise.
+   * @param inflater
+   * @param container
+   * @param savedInstanceState
+   * @return
+   */
   @SuppressWarnings("deprecation")
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,6 +69,10 @@ public class AuthenticationFragment extends Fragment{
     webView.setVisibility(View.VISIBLE);
   }
 
+  /**
+   * Setter for VKSdkListener
+   * @param vkSdkListener
+   */
   public void setVkSdkListener(VKSdkListener vkSdkListener) {
     this.vkSdkListener = vkSdkListener;
   }
@@ -73,25 +83,19 @@ public class AuthenticationFragment extends Fragment{
     getActivity().setTitle("Авторизация");
   }
 
-//  @Override
-//  public void onAttach(Activity activity) {
-//    super.onAttach(activity);
-//    fragmentSavedStateCallback = (FragmentSavedState) activity;
-//  }
-
-//  @Override
-//  public void onPause() {
-//    super.onPause();
-//    fragmentSavedStateCallback.setFragmentSavedState(this.getClass().getSimpleName(), getActivity().getSupportFragmentManager().saveFragmentInstanceState(this));
-//    Log.i("TestAuthFragment", "onPause");
-//  }
-
+  /**
+   * onSaveInstanceState we cache page contents to Bundle
+   * @param outState
+   */
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
     webView.saveState(outState);
   }
 
+  /**
+   * Our WebView custom class. We start to parse redirect URL after page is finished loading.
+   */
   class VkWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
@@ -100,6 +104,10 @@ public class AuthenticationFragment extends Fragment{
     }
   }
 
+  /**
+   * After we successfully parse URL - we initialize VKSdk and hide WebView.
+   * @param url
+   */
   private void parseUrl(String url) {
     try {
       if (url == null) {
@@ -113,14 +121,14 @@ public class AuthenticationFragment extends Fragment{
 
           VKSdk.initialize(vkSdkListener, APP_ID, VKAccessToken.tokenFromUrlString(url));
         } else {
-          Log.e("TestAuthFragment", "error");
+          Log.e("AuthFragment", "error");
         }
       } else if (url.contains("error?err")) {
-        Log.e("TestAuthFragment", "error");
+        Log.e("AuthFragment", "error");
       }
     } catch (Exception e) {
       e.printStackTrace();
-      Log.e("TestAuthFragment", "error");
+      Log.e("AuthFragment", "error");
 
     }
   }
