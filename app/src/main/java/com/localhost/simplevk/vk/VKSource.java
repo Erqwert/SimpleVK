@@ -8,6 +8,10 @@ import org.json.JSONObject;
 
 public class VKSource implements Parcelable {
 
+  public VKSource(){
+
+  }
+
   /**
    * ID of user or group
    */

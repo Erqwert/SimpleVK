@@ -10,6 +10,8 @@ import com.vk.sdk.api.model.VKAttachments;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class VKFeed implements Parcelable{
 
   public VKFeed(){
@@ -110,11 +112,7 @@ public class VKFeed implements Parcelable{
    * List of history of the reposts.
    */
   // todo check copy history
-  //public VKList<VKApiPost> copy_history;
-
-  /**
-   * Fills a Post instance from JSONObject.
-   */
+  public ArrayList<VKFeed> copy_history;
 
   /**
    * Setter for vkSourse
@@ -128,7 +126,9 @@ public class VKFeed implements Parcelable{
   }
 
 
-
+  /**
+   * Fills a Post instance from JSONObject.
+   */
   public VKFeed parse(JSONObject source) throws JSONException {
     source_id = source.optInt("source_id");
     post_id = source.optInt("post_id");

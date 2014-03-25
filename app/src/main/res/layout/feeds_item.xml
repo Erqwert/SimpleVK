@@ -99,6 +99,50 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:orientation="horizontal"
+    android:layout_below="@+id/feed_llLinkAttachments"
+    android:visibility="gone"
+    android:id="@+id/feed_llRepost">
+
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:scaleY="0.7"
+      android:scaleX="0.7"
+      android:src="@drawable/ic_anabolism"
+      android:id="@+id/feed_ivRepostAvatar"/>
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_marginLeft="10dp"
+      android:paddingBottom="10dp"
+      android:layout_gravity="center_vertical">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ANABOLISM"
+        android:drawableLeft="@drawable/repost"
+        android:maxLines="1"
+        android:textSize="18sp"
+        android:id="@+id/feed_tvRepostName" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20 минут назад"
+        android:textColor="@color/authEditTextHintColor"
+        android:textSize="13sp"
+        android:id="@+id/feed_tvRepostDate" />
+    </LinearLayout>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:visibility="gone"
     android:id="@+id/feed_llLinkAttachments"
@@ -143,7 +187,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/feed_llFooter"
-    android:layout_below="@+id/feed_llLinkAttachments">
+    android:layout_below="@+id/feed_llRepost">
 
     <View
       android:layout_width="match_parent"
