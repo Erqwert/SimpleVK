@@ -135,26 +135,29 @@ public class VKFeed implements Parcelable{
     date = source.optLong("date");
     text = source.optString("text");
     JSONObject comments = source.optJSONObject("comments");
-    if(comments != null) {
+    if(null != comments) {
       comments_count = comments.optInt("count");
       can_post_comment = ParseUtils.parseBoolean(comments, "can_post");
     }
     JSONObject likes = source.optJSONObject("likes");
-    if(likes != null) {
+    if(null != likes) {
       likes_count = likes.optInt("count");
       user_likes = ParseUtils.parseBoolean(likes, "user_likes");
       can_like = ParseUtils.parseBoolean(likes, "can_like");
       can_publish = ParseUtils.parseBoolean(likes, "can_publish");
     }
     JSONObject reposts = source.optJSONObject("reposts");
-    if(reposts != null) {
+    if(null != reposts) {
       reposts_count = reposts.optInt("count");
       user_reposted = ParseUtils.parseBoolean(reposts, "user_reposted");
     }
     post_type = source.optString("post_type");
+
     attachments.fill(source.optJSONArray("attachments"));
+
+
     JSONObject geo = source.optJSONObject("geo");
-    if(geo != null) {
+    if(null != geo) {
       this.geo = new VKApiPlace().parse(geo);
     }
     //copy_history = new VKList<VKApiPost>(source.optJSONArray("copy_history"), VKApiPost.class);

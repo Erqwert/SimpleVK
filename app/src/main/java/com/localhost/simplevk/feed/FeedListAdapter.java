@@ -43,16 +43,25 @@ public class FeedListAdapter extends BaseAdapter{
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    FeedsItemView feedsItemView = convertView != null ?
-      (FeedsItemView) convertView :
-      FeedsItemView_.build(context);
+//    Commented due to recycle bug, will fix later.
+//    FeedsItemView feedsItemView = convertView != null ?
+//      (FeedsItemView) convertView :
+//      FeedsItemView_.build(context);
+
+    FeedsItemView feedsItemView = FeedsItemView_.build(context);
 
     feedsItemView.bind(vkFeeds.get(position));
     return feedsItemView;
   }
 
   public void setVkFeeds(ArrayList<VKFeed> vkFeeds){
-    this.vkFeeds=vkFeeds;
+    //this.vkFeeds=vkFeeds;
+    //test
+    if(null != this.vkFeeds){
+      this.vkFeeds.addAll(vkFeeds);
+    }else{
+      this.vkFeeds = vkFeeds;
+    }
     notifyDataSetChanged();
   }
 

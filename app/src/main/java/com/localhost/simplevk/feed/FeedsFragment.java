@@ -2,12 +2,14 @@ package com.localhost.simplevk.feed;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,6 +43,9 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   protected FeedListAdapter feedListAdapter;
 
   private static final String FEED_BUNDLE_TAG = "FEED_BUNDLE";
+  private static final String FEEDS_LIST_TAG = "FEEDS_LIST";
+
+  private Parcelable feeds_list;
 
   private FeedsTasksFragment feedsTasksFragment;
   private static final String FEED_TASKS_FRAGMENT_TAG = "FRAGMENT_FEED_TASKS";
@@ -48,6 +53,11 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   private FeedFragmentCallbacks feedFragmentCallbacks;
 
   ArrayList<VKFeed> vkFeeds;
+
+  private boolean loading = false;
+  private String new_from;
+  private int current_position = 0;
+  private int top_position = 0;
 
   /**
    * After user Pulls Pull-to-refresh - we launch a background task to get Feeds or
@@ -57,8 +67,12 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   @Override
   public void onRefreshStarted(View view) {
     if(Utils.isNetworkAvailable(getActivity())){
-      feedsTasksFragment.getFeeds();
+      loading = true;
+      current_position = 0;
+      top_position = 0;
+      feedsTasksFragment.getFeeds(new_from);
     }else{
+      loading = false;
       feed_pullToRefreshLayout.setRefreshComplete();
       Toast.makeText(getActivity(), "Сеть недоступна", Toast.LENGTH_SHORT).show();
     }
@@ -102,6 +116,10 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
+    //feeds_list = feed_ListView.onSaveInstanceState();
+    int position = feed_ListView.getFirstVisiblePosition();
+    outState.putInt(FEEDS_LIST_TAG, position);
+    //outState.putParcelable(FEEDS_LIST_TAG, feeds_list);
     outState.putParcelableArrayList(FEED_BUNDLE_TAG, vkFeeds);
   }
 
@@ -138,9 +156,30 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       vkFeeds = savedInstanceState.getParcelableArrayList(FEED_BUNDLE_TAG);
       feed_ListView.setAdapter(feedListAdapter);
       feedListAdapter.setVkFeeds(vkFeeds);
+      feed_ListView.setSelectionFromTop(savedInstanceState.getInt(FEEDS_LIST_TAG), 0);
     }else {
       initAdapter();
     }
+
+    feed_ListView.setOnScrollListener(new AbsListView.OnScrollListener(){
+
+      @Override
+      public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+      @Override
+      public void onScroll(AbsListView view, int firstVisibleItem,
+                           int visibleItemCount, int totalItemCount) {
+
+        int lastInScreen = firstVisibleItem + visibleItemCount;
+        if((lastInScreen == totalItemCount) && !(loading)){
+          current_position = feed_ListView.getFirstVisiblePosition();
+          View v = feed_ListView.getChildAt(0);
+          top_position = (v == null) ? 0 : v.getTop();
+          feedsTasksFragment.getFeeds(new_from);
+          loading = true;
+        }
+      }
+    });
   }
 
   /**
@@ -148,7 +187,8 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
    */
   public void initAdapter(){
     if(Utils.isNetworkAvailable(getActivity())){
-      feedsTasksFragment.getFeeds();
+      loading = true;
+      feedsTasksFragment.getFeeds(new_from);
     }
   }
 
@@ -182,11 +222,12 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
    * @param vkFeeds
    */
   @UiThread
-  public void processVKResponseParsedResult(ArrayList<VKFeed> vkFeeds){
+  public void processVKResponseParsedResult(final ArrayList<VKFeed> vkFeeds, String new_from){
     // Check list for null
     if(null!=vkFeeds){
       if(vkFeeds.size()!=0){
         this.vkFeeds = vkFeeds;
+        this.new_from = new_from;
       }
     }else{
       Toast.makeText(getActivity(), "Во время обновления ленты произошла ошибка.", Toast.LENGTH_SHORT).show();
@@ -194,10 +235,15 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
     feed_ListView.setAdapter(feedListAdapter);
     feedListAdapter.setVkFeeds(vkFeeds);
+    if (current_position != 0){
+      feed_ListView.setSelectionFromTop(current_position+1, top_position);
+    }
 
 //    if(progressBar!=null){
 //      lvCalc_list.removeHeaderView(progressBar);
 //    }
+
+    loading = false;
 
     if(feed_pullToRefreshLayout.isRefreshing()){
       feed_pullToRefreshLayout.setRefreshComplete();

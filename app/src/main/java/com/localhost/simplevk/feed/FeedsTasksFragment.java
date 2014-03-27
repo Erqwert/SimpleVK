@@ -26,14 +26,14 @@ import java.util.ArrayList;
 public class FeedsTasksFragment extends Fragment{
 
   VKRequest newsFeedRequest;
-  private static final int VKREQUEST_FEEDS_COUNT = 50;
+  private static final int VKREQUEST_FEEDS_COUNT = 5;
 
   private static final String TAG = "FeedsTasksFragment";
 
   private GetFeedsActivityCallbacks getFeedsActivityCallbacks;
 
   public static interface GetFeedsActivityCallbacks {
-    void onVKResponseParsed(ArrayList<VKFeed> VKFeeds);
+    void onVKResponseParsed(ArrayList<VKFeed> VKFeeds, String new_from);
   }
 
   @AfterInject
@@ -74,8 +74,13 @@ public class FeedsTasksFragment extends Fragment{
    * Background task to getFeeds. Starts parsing method onComplete
    */
   @Background
-  public void getFeeds(){
-    newsFeedRequest = new VKRequest("newsfeed.get", VKParameters.from("filters", "post", VKApiConst.COUNT, VKREQUEST_FEEDS_COUNT, "return_banned", 0));
+  public void getFeeds(String new_from){
+    if(null != new_from){
+      Log.i(TAG, "new_from: " + new_from);
+      newsFeedRequest = new VKRequest("newsfeed.get", VKParameters.from("from", new_from, "filters", "post", VKApiConst.COUNT, VKREQUEST_FEEDS_COUNT, "return_banned", 0));
+    }else {
+      newsFeedRequest = new VKRequest("newsfeed.get", VKParameters.from("filters", "post", VKApiConst.COUNT, VKREQUEST_FEEDS_COUNT, "return_banned", 0));
+    }
     newsFeedRequest.executeWithListener(new VKRequest.VKRequestListener() {
       @Override
       public void onComplete(VKResponse response) {
@@ -92,6 +97,7 @@ public class FeedsTasksFragment extends Fragment{
       @Override
       public void onError(VKError error) {
         super.onError(error);
+        Log.i("Error", error.errorReason);
         Log.i("Error", error.errorMessage);
       }
 
@@ -100,7 +106,6 @@ public class FeedsTasksFragment extends Fragment{
         super.onProgress(progressType, bytesLoaded, bytesTotal);
       }
     });
-    Log.i("newsFeedRequest", "newsFeedRequest id=" + newsFeedRequest);
   }
 
 
@@ -112,6 +117,7 @@ public class FeedsTasksFragment extends Fragment{
   public void parseVKResponse(VKResponse response){
     ArrayList<VKFeed> vkFeeds = new ArrayList<>();
     ArrayList<VKSource> vkSources = new ArrayList<>();
+    String new_from="";
 
     try {
       JSONObject jsonResponse = response.json.getJSONObject("response");
@@ -156,6 +162,12 @@ public class FeedsTasksFragment extends Fragment{
         vkFeeds.add(vkFeed);
       }
 
+      // Retreive new_from
+      //JSONObject jsonNewFrom = jsonResponse.getJSONObject("new_from");
+
+      new_from = jsonResponse.getString("new_from");
+      Log.i(TAG, new_from);
+
     } catch (JSONException e) {
       Log.e(TAG, String.valueOf(e.getMessage()));
     }
@@ -163,7 +175,7 @@ public class FeedsTasksFragment extends Fragment{
 
     //When parsing is done - notify MainActivity
     if(null!=getFeedsActivityCallbacks) {
-      getFeedsActivityCallbacks.onVKResponseParsed(vkFeeds);
+      getFeedsActivityCallbacks.onVKResponseParsed(vkFeeds, new_from);
     }
   }
 }

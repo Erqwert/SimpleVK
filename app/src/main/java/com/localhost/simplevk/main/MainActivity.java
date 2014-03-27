@@ -238,10 +238,10 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
    * @param vkFeeds
    */
   @Override
-  public void onVKResponseParsed(ArrayList<VKFeed> vkFeeds) {
+  public void onVKResponseParsed(ArrayList<VKFeed> vkFeeds, String new_from) {
     Fragment feedsFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);
     if (feedsFragment instanceof FeedsFragment) {
-      ((FeedsFragment)feedsFragment).processVKResponseParsedResult(vkFeeds);
+      ((FeedsFragment)feedsFragment).processVKResponseParsedResult(vkFeeds, new_from);
     }
   }
 }

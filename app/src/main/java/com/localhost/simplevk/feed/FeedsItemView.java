@@ -160,13 +160,14 @@ public class FeedsItemView extends RelativeLayout {
   private void setAttachments(VKAttachments attachments){
     boolean has1stPhoto = false;
     boolean hasLink = false;
-    for(VKAttachments.VKApiAttachment attachment : attachments){
 
+    Picasso.with(context).setDebugging(true);
+
+    for(VKAttachments.VKApiAttachment attachment : attachments){
       switch(attachment.getType()){
         case VKAttachments.TYPE_PHOTO:
           if(!has1stPhoto){
             Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).into(feed_iv1stPhotoAttachment);
-            Picasso.with(context).setDebugging(true);
             feed_llPhotoAttachments.setVisibility(VISIBLE);
             has1stPhoto = true;
           }
