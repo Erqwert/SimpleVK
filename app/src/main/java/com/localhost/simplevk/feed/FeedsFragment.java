@@ -42,9 +42,10 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   @Bean
   protected FeedListAdapter feedListAdapter;
 
-  private static final String FEEDS_LIST_CONTENT = "FEEDS_LIST_CONTENT";
+  private static final String FEEDS_LIST_CONTENT_TAG = "FEEDS_LIST_CONTENT";
   private static final String FEEDS_LIST_CURRENT_POSITION_TAG = "FEEDS_LIST_CURRENT_POSITION";
   private static final String FEEDS_LIST_TOP_POSITION_TAG = "FEEDS_LIST_TOP_POSITION";
+  private static final String FEEDS_LIST_NEW_FROM_TAG = "FEEDS_LIST_NEW_FROM";
 
   private Parcelable feeds_list;
 
@@ -124,7 +125,11 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
     outState.putInt(FEEDS_LIST_TOP_POSITION_TAG, getTopPosition());
 
     // Saving vkFeeds list to Bundle
-    outState.putParcelableArrayList(FEEDS_LIST_CONTENT, vkFeeds);
+    vkFeeds = feedListAdapter.getFeeds();
+    outState.putParcelableArrayList(FEEDS_LIST_CONTENT_TAG, vkFeeds);
+
+    // Saving vkResponse new_from string
+    outState.putString(FEEDS_LIST_NEW_FROM_TAG, new_from);
   }
 
   /**
@@ -166,29 +171,41 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       .setup(feed_pullToRefreshLayout);
 
     if(null != savedInstanceState){
-      vkFeeds = savedInstanceState.getParcelableArrayList(FEEDS_LIST_CONTENT);
+      vkFeeds = savedInstanceState.getParcelableArrayList(FEEDS_LIST_CONTENT_TAG);
+      new_from = savedInstanceState.getString(FEEDS_LIST_NEW_FROM_TAG);
+      current_position = savedInstanceState.getInt(FEEDS_LIST_CURRENT_POSITION_TAG);
+      top_position = savedInstanceState.getInt(FEEDS_LIST_TOP_POSITION_TAG);
       feed_ListView.setAdapter(feedListAdapter);
       feedListAdapter.setVkFeeds(vkFeeds);
-      feed_ListView.setSelectionFromTop(savedInstanceState.getInt(FEEDS_LIST_CURRENT_POSITION_TAG), savedInstanceState.getInt(FEEDS_LIST_TOP_POSITION_TAG));
+      feed_ListView.setSelectionFromTop(current_position, top_position);
     }else {
       initAdapter();
     }
 
     feed_ListView.setOnScrollListener(new AbsListView.OnScrollListener(){
+      boolean isScrolling=false;
 
       @Override
-      public void onScrollStateChanged(AbsListView view, int scrollState) {}
+      public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if(scrollState != SCROLL_STATE_IDLE){
+          isScrolling = true;
+        }else{
+          isScrolling = false;
+        }
+      }
 
       @Override
       public void onScroll(AbsListView view, int firstVisibleItem,
                            int visibleItemCount, int totalItemCount) {
 
-        int lastInScreen = firstVisibleItem + visibleItemCount;
-        if((lastInScreen == totalItemCount) && !(loading)){
-          current_position = feed_ListView.getFirstVisiblePosition();
-          top_position = getTopPosition();
-          feedsTasksFragment.getFeeds(new_from);
-          loading = true;
+        if(isScrolling) {
+          int lastInScreen = firstVisibleItem + visibleItemCount;
+          if ((lastInScreen >= totalItemCount) && !(loading)) {
+            loading = true;
+            current_position = feed_ListView.getFirstVisiblePosition();
+            top_position = getTopPosition();
+            feedsTasksFragment.getFeeds(new_from);
+          }
         }
       }
     });
@@ -248,7 +265,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
     feed_ListView.setAdapter(feedListAdapter);
     feedListAdapter.setVkFeeds(vkFeeds);
     if (current_position != 0){
-      feed_ListView.setSelectionFromTop(current_position+1, top_position);
+      feed_ListView.setSelectionFromTop(current_position, top_position);
     }
 
 //    if(progressBar!=null){

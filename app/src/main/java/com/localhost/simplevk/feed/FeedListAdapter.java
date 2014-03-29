@@ -21,6 +21,14 @@ public class FeedListAdapter extends BaseAdapter{
 
   private ArrayList<VKFeed> vkFeeds;
 
+  public FeedListAdapter() {
+    this.vkFeeds = new ArrayList<>();
+  }
+
+  public ArrayList<VKFeed> getFeeds() {
+    return vkFeeds;
+  }
+
   @AfterInject
   protected void init() {
     vkFeeds = new ArrayList<>();
@@ -60,7 +68,7 @@ public class FeedListAdapter extends BaseAdapter{
   }
 
   public void setVkFeeds(ArrayList<VKFeed> vkFeeds){
-    if(null != this.vkFeeds){
+    if(this.vkFeeds.size() > 0 && null != vkFeeds){
       this.vkFeeds.addAll(vkFeeds);
     }else{
       this.vkFeeds = vkFeeds;
