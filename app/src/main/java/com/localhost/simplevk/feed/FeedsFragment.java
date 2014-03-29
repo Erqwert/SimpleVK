@@ -70,7 +70,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       loading = true;
       current_position = 0;
       top_position = 0;
-      feedsTasksFragment.getFeeds(new_from);
+      feedsTasksFragment.getFeeds(null);
     }else{
       loading = false;
       feed_pullToRefreshLayout.setRefreshComplete();

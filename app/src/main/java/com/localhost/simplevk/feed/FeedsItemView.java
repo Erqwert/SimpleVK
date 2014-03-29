@@ -154,12 +154,13 @@ public class FeedsItemView extends RelativeLayout {
   }
 
   /**
-   * Set and display Feed's attachments (no complete)
+   * Set and display Feed's attachments (not complete)
    * @param attachments
    */
   private void setAttachments(VKAttachments attachments){
     boolean has1stPhoto = false;
     boolean hasLink = false;
+    initAttachments();
 
     Picasso.with(context).setDebugging(true);
 
@@ -188,5 +189,13 @@ public class FeedsItemView extends RelativeLayout {
           break;
       }
     }
+  }
+
+  /**
+   * We set attachments field to GONE so if view was recycled - it will be empty.
+   */
+  private void initAttachments(){
+    feed_llPhotoAttachments.setVisibility(GONE);
+    feed_llLinkAttachments.setVisibility(GONE);
   }
 }
