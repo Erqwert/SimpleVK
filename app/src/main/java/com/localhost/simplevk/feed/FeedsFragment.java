@@ -58,6 +58,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
   private boolean loading = false;
   private String new_from;
+  private String new_offset;
   private int current_position = 0;
   private int top_position = 0;
 
@@ -251,12 +252,13 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
    * @param vkFeeds
    */
   @UiThread
-  public void processVKResponseParsedResult(final ArrayList<VKFeed> vkFeeds, String new_from){
+  public void processVKResponseParsedResult(final ArrayList<VKFeed> vkFeeds, String new_from, String new_offset){
     // Check list for null
     if(null!=vkFeeds){
       if(vkFeeds.size()!=0){
         this.vkFeeds = vkFeeds;
         this.new_from = new_from;
+        this.new_offset = new_offset;
       }
     }else{
       Toast.makeText(getActivity(), "Во время обновления ленты произошла ошибка.", Toast.LENGTH_SHORT).show();

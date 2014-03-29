@@ -124,21 +124,18 @@ public class FeedsItemView extends RelativeLayout {
   }
 
   /**
-   * Print date same as native Android VK APP (not complete)
+   * Prints date in VKFeed or VKPost
    * @param textView
    * @param unixTime
    */
   private void setFeedDate(TextView textView, long unixTime){
-    // Todo show smart date compared to time passed
-    // Сегодня в хх хх, Вчера в хх хх, 22 марта в хх хх итд
-    // int DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-
     long dateTimeInMillis = unixTime*1000;
 
-    // If date is today
+    Date date = new Date(dateTimeInMillis);
     if(DateUtils.isToday(dateTimeInMillis)){
-      Date date = new Date(dateTimeInMillis);
       textView.setText("Сегодня в "+new SimpleDateFormat("HH:mm").format(date));
+    }else{
+      textView.setText(new SimpleDateFormat("dd MMMM").format(date) + " в " + new SimpleDateFormat("HH:mm").format(date));
     }
   }
 
