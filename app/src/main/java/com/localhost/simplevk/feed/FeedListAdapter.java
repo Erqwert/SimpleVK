@@ -41,15 +41,19 @@ public class FeedListAdapter extends BaseAdapter{
     return position;
   }
 
+  /**
+   * Here we use a ViewHolder pattern to get view by position
+   * @param position
+   * @param convertView
+   * @param parent
+   * @return
+   */
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    //Commented due to recycle bug, will fix later.
     // ViewHolder pattern
     FeedsItemView feedsItemView = convertView != null ?
       (FeedsItemView) convertView :
       FeedsItemView_.build(context);
-
-    //FeedsItemView feedsItemView = FeedsItemView_.build(context);
 
     feedsItemView.bind(getItem(position));
     return feedsItemView;
@@ -62,6 +66,10 @@ public class FeedListAdapter extends BaseAdapter{
       this.vkFeeds = vkFeeds;
     }
     notifyDataSetChanged();
+  }
+
+  public void resetVkFeeds(){
+    this.vkFeeds = new ArrayList<>();
   }
 
   /**

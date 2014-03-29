@@ -97,7 +97,7 @@ public class FeedsTasksFragment extends Fragment{
       @Override
       public void onError(VKError error) {
         super.onError(error);
-        Log.i("Error", error.errorReason);
+        //Log.i("Error", error.errorReason);
         Log.i("Error", error.errorMessage);
       }
 
