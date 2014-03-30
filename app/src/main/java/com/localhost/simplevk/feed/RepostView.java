@@ -2,13 +2,13 @@ package com.localhost.simplevk.feed;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayout;
-import android.text.format.DateUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.localhost.simplevk.R;
+import com.localhost.simplevk.utils.Utils;
 import com.localhost.simplevk.vk.VKRepost;
 import com.squareup.picasso.Picasso;
 import com.vk.sdk.api.model.VKApiLink;
@@ -17,9 +17,6 @@ import com.vk.sdk.api.model.VKAttachments;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @EViewGroup(R.layout.repost_item)
 public class RepostView extends RelativeLayout {
@@ -73,36 +70,18 @@ public class RepostView extends RelativeLayout {
     // Set group/user name
     feed_tvName.setText(vkRepost.source_name);
     // Set feed date
-    setFeedDate(feed_tvDate, vkRepost.date);
+    Utils.setFeedDate(feed_tvDate, vkRepost.date);
 
     // Body
 
-
     // Set feed text
-    setFeedText(feed_tvText, vkRepost.text);
+    Utils.setFeedText(feed_tvText, vkRepost.text);
     // Set attachments
     if(null != vkRepost.attachments) {
       setAttachments(vkRepost.attachments);
     }
 
 
-  }
-
-  private void setFeedDate(TextView textView, long unixTime){
-    long dateTimeInMillis = unixTime*1000;
-
-    Date date = new Date(dateTimeInMillis);
-    if(DateUtils.isToday(dateTimeInMillis)){
-      textView.setText("Сегодня в "+new SimpleDateFormat("HH:mm").format(date));
-    }else{
-      textView.setText(new SimpleDateFormat("dd MMMM").format(date) + " в " + new SimpleDateFormat("HH:mm").format(date));
-    }
-  }
-
-  private void setFeedText(TextView textView, String text){
-    // Todo shorten text if it's too large
-    textView.setVisibility(text.equals("") ? GONE : VISIBLE);
-    textView.setText(text);
   }
 
   /**

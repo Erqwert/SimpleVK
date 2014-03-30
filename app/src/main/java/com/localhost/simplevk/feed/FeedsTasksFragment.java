@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public class FeedsTasksFragment extends Fragment{
 
   VKRequest newsFeedRequest;
+  VKRequest postRequest;
   private static final int VKREQUEST_FEEDS_COUNT = 5;
 
   private static final String TAG = "FeedsTasksFragment";
@@ -34,6 +35,7 @@ public class FeedsTasksFragment extends Fragment{
 
   public static interface GetFeedsActivityCallbacks {
     void onVKResponseParsed(ArrayList<VKFeed> VKFeeds, String new_from, String new_offset);
+    void onGetPostRequest(VKFeed vkFeed);
   }
 
   @AfterInject
@@ -108,12 +110,20 @@ public class FeedsTasksFragment extends Fragment{
     });
   }
 
+  @Background
+  public void getPost(VKFeed vkFeed){
+    //Log.i(TAG, "id: " + id);
+    //postRequest = new VKRequest("wall.getById", VKParameters.from("posts", id, "extended", 1, "copy_history_depth", 1));
+    if(null!=getFeedsActivityCallbacks) {
+      getFeedsActivityCallbacks.onGetPostRequest(vkFeed);
+    }
+  }
+
 
   /**
    * Here we parse response and send result to MainActivity
    * @param response
    */
-  @SuppressWarnings("VariableMayNotBeInitialized")
   @Background
   public void parseVKResponse(VKResponse response){
     ArrayList<VKFeed> vkFeeds = new ArrayList<>();
@@ -154,7 +164,12 @@ public class FeedsTasksFragment extends Fragment{
 
         for(VKSource vkSource : vkSources){
           if(vkSource.getId() == Math.abs(vkFeed.source_id)){
-            // need to test negative group id
+            // need to write negative ids
+            if(vkFeed.source_id > 0) {
+              vkFeed.isUserFeed = true;
+            }else{
+              vkFeed.isUserFeed = false;
+            }
             vkFeed.setSourceData(vkSource);
             //break;
           }
@@ -172,9 +187,6 @@ public class FeedsTasksFragment extends Fragment{
         vkFeeds.add(vkFeed);
       }
 
-      // Retreive new_from
-      //JSONObject jsonNewFrom = jsonResponse.getJSONObject("new_from");
-
       new_from = jsonResponse.getString("new_from");
       Log.i(TAG, new_from);
 
@@ -191,4 +203,26 @@ public class FeedsTasksFragment extends Fragment{
       getFeedsActivityCallbacks.onVKResponseParsed(vkFeeds, new_from, new_offset);
     }
   }
+
+//  @Background
+//  public void parseVKPost(VKResponse vkResponse){
+//    ArrayList<VKSource> vkSources = new ArrayList<>();
+//
+//    try {
+//      JSONObject jsonResponse = vkResponse.json.getJSONObject("response");
+//
+//
+//
+//    } catch (JSONException e) {
+//      Log.e(TAG, String.valueOf(e.getMessage()));
+//    }
+//
+//
+//    //When parsing is done - notify MainActivity
+//    if(null!=getFeedsActivityCallbacks) {
+//      getFeedsActivityCallbacks.onVKResponseParsed(vkFeeds, new_from, new_offset);
+//    }
+//  }
+
+
 }

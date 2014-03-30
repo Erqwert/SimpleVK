@@ -11,6 +11,7 @@ import com.localhost.simplevk.R;
 import com.localhost.simplevk.authentication.AuthenticationFragment_;
 import com.localhost.simplevk.feed.FeedsFragment;
 import com.localhost.simplevk.feed.FeedsTasksFragment;
+import com.localhost.simplevk.post.PostFragment_;
 import com.localhost.simplevk.utils.FragmentSavedState;
 import com.localhost.simplevk.vk.VKFeed;
 import com.vk.sdk.VKAccessToken;
@@ -19,6 +20,7 @@ import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.api.VKError;
 
 import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 
@@ -47,6 +49,8 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
   private static final String APP_ID = "4255934";
   private static final String VK_SDK_ACCESS_TOKEN_PREF_KEY = "VK_SDK_ACCESS_TOKEN_PLEASE_DONT_TOUCH";
 
+  VKFeed vkFeed;
+
   /**
    * Saves current state of fragment
    * @param key fragment class name
@@ -70,6 +74,11 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
   @AfterInject
   protected void init() {
     initVKSdkListener();
+  }
+
+  @AfterViews
+  protected void initViews(){
+
   }
 
   @Override
@@ -133,9 +142,17 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
         if (fragmentManager.getBackStackEntryCount() > 0) {
           fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-        fragmentManager.beginTransaction()
-          .replace(R.id.activity_main_container, destinationFragment, fragmentTAG)
-          .commit();
+        if(destinationFragment instanceof  PostFragment_){
+          fragmentManager.beginTransaction()
+            .replace(R.id.activity_main_container, destinationFragment, fragmentTAG)
+            .addToBackStack("post")
+            .commit();
+        }else {
+
+          fragmentManager.beginTransaction()
+            .replace(R.id.activity_main_container, destinationFragment, fragmentTAG)
+            .commit();
+        }
       }else if(destinationFragment.isAdded()){
         fragmentManager.beginTransaction()
           .show(destinationFragment)
@@ -144,6 +161,9 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
       }
       if(destinationFragment instanceof AuthenticationFragment_) {
         ((AuthenticationFragment_) destinationFragment).setVkSdkListener(vkSdkListener);
+      }
+      if(destinationFragment instanceof PostFragment_ && null != vkFeed) {
+        ((PostFragment_) destinationFragment).setVkFeed(vkFeed);
       }
     }
   }
@@ -196,6 +216,12 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     };
   }
 
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+    currentFragmentId = R.id.fragment_feeds;
+  }
+
   /**
    * On logout we hide back ActionBar and load AuthenticationFragment
    */
@@ -243,5 +269,11 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     if (feedsFragment instanceof FeedsFragment) {
       ((FeedsFragment)feedsFragment).processVKResponseParsedResult(vkFeeds, new_from, new_offset);
     }
+  }
+
+  @Override
+  public void onGetPostRequest(VKFeed vkFeed) {
+    this.vkFeed = vkFeed;
+    goToFragment(R.id.fragment_post);
   }
 }

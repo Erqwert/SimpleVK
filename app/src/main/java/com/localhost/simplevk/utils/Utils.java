@@ -4,12 +4,44 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Utils {
+
+  /**
+   * Sets Feed's body text and make it VISIBLE if needed
+   * @param textView
+   * @param text
+   */
+  public static void setFeedText(TextView textView, String text){
+    // Todo shorten text if it's too large
+    textView.setVisibility(text.equals("") ? View.GONE : View.VISIBLE);
+    textView.setText(text);
+  }
+
+  /**
+   * Prints date in VKFeed or VKPost
+   * @param textView
+   * @param unixTime
+   */
+  public static void setFeedDate(TextView textView, long unixTime){
+    long dateTimeInMillis = unixTime*1000;
+
+    Date date = new Date(dateTimeInMillis);
+    if(DateUtils.isToday(dateTimeInMillis)){
+      textView.setText("Сегодня в "+new SimpleDateFormat("HH:mm").format(date));
+    }else{
+      textView.setText(new SimpleDateFormat("dd MMMM").format(date) + " в " + new SimpleDateFormat("HH:mm").format(date));
+    }
+  }
 
   /**
    * Static method to hide Software Keyboard

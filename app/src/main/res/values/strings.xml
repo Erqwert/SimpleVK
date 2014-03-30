@@ -4,6 +4,7 @@
   <string name="app_name">SimpleVK</string>
 
   <string name="auth_title">Авторизация</string>
+  <string name="post_title">Запись на стене</string>
 
 
   <string name="auth_LoginButtonText">Войти</string>

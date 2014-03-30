@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:paddingTop="5dp"
-  android:paddingLeft="5dp"
-  android:paddingRight="5dp"
-  android:layout_margin="5dp"
-  android:background="@color/White"
-  android:id="@+id/feed_rlFeedContainer"
-  android:descendantFocusability="blocksDescendants">
+  >
+
+<RelativeLayout
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="@color/White">
 
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
     android:orientation="horizontal"
-    android:id="@+id/feed_llHeader">
+    android:id="@+id/feed_llPostHeader">
 
     <ImageView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:src="@drawable/ic_anabolism"
-      android:id="@+id/feed_ivAvatar"/>
+      android:id="@+id/feed_ivPostAvatar"/>
 
     <LinearLayout
       android:layout_width="wrap_content"
@@ -39,7 +38,7 @@
         android:text="ANABOLISM"
         android:maxLines="1"
         android:textSize="18sp"
-        android:id="@+id/feed_tvName" />
+        android:id="@+id/feed_tvPostName" />
 
       <TextView
         android:layout_width="wrap_content"
@@ -47,7 +46,7 @@
         android:text="20 минут назад"
         android:textColor="@color/authEditTextHintColor"
         android:textSize="13sp"
-        android:id="@+id/feed_tvDate" />
+        android:id="@+id/feed_tvPostDate" />
     </LinearLayout>
   </LinearLayout>
 
@@ -58,8 +57,8 @@
     android:layout_marginLeft="3dp"
     android:layout_marginRight="3dp"
     android:orientation="vertical"
-    android:id="@+id/feed_llBody"
-    android:layout_below="@+id/feed_llHeader">
+    android:id="@+id/feed_llPostBody"
+    android:layout_below="@+id/feed_llPostHeader">
 
     <TextView
       android:layout_width="match_parent"
@@ -68,8 +67,7 @@
       android:autoLink="web"
       android:textColorLink="@color/feed_tvTextLinkColor"
       android:linksClickable="true"
-      android:maxLines="8"
-      android:id="@+id/feed_tvText"/>
+      android:id="@+id/feed_tvPostText"/>
 
   </LinearLayout>
 
@@ -79,21 +77,21 @@
     android:layout_marginTop="2dp"
     android:orientation="vertical"
     android:visibility="gone"
-    android:id="@+id/feed_llPhotoAttachments"
-    android:layout_below="@+id/feed_llBody">
+    android:id="@+id/feed_llPostPhotoAttachments"
+    android:layout_below="@+id/feed_llPostBody">
 
     <ImageView
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:id="@+id/feed_iv1stPhotoAttachment"/>
+      android:id="@+id/feed_ivPost1stPhotoAttachment"/>
 
     <android.support.v7.widget.GridLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       app:columnCount="5"
       app:rowCount="1"
-      android:id="@+id/feed_glPhotoAttachments"
+      android:id="@+id/feed_glPostPhotoAttachments"
       />
 
   </LinearLayout>
@@ -103,9 +101,9 @@
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
     android:orientation="horizontal"
-    android:layout_below="@+id/feed_llLinkAttachments"
+    android:layout_below="@+id/feed_llPostLinkAttachments"
     android:visibility="gone"
-    android:id="@+id/feed_llRepost">
+    android:id="@+id/feed_llPostRepost">
 
   </LinearLayout>
 
@@ -115,14 +113,14 @@
     android:layout_margin="3dp"
     android:orientation="horizontal"
     android:visibility="gone"
-    android:id="@+id/feed_llLinkAttachments"
-    android:layout_below="@+id/feed_llPhotoAttachments">
+    android:id="@+id/feed_llPostLinkAttachments"
+    android:layout_below="@+id/feed_llPostPhotoAttachments">
 
     <ImageView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:src="@drawable/link_60"
-      android:id="@+id/feed_ivLinkIcon"/>
+      android:id="@+id/feed_ivPostLinkIcon"/>
 
     <LinearLayout
       android:layout_width="wrap_content"
@@ -134,7 +132,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
-        android:id="@+id/feed_tvLinkName" />
+        android:id="@+id/feed_tvPostLinkName" />
 
       <TextView
         android:layout_width="wrap_content"
@@ -142,7 +140,7 @@
         android:maxLines="1"
         android:textColor="@color/authEditTextHintColor"
         android:textSize="13sp"
-        android:id="@+id/feed_tvLinkURL" />
+        android:id="@+id/feed_tvPostLinkURL" />
     </LinearLayout>
   </LinearLayout>
 
@@ -152,42 +150,67 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:id="@+id/feed_llFooter"
-    android:layout_below="@+id/feed_llRepost">
-
-    <View
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginLeft="2dp"
-      android:layout_marginRight="2dp"
-      android:layout_marginTop="10dp"
-      android:background="@color/feed_footerDivider" />
+    android:id="@+id/feed_llPostFooter"
+    android:layout_below="@+id/feed_llPostRepost">
 
     <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="2dp"
       android:orientation="horizontal"
-      android:id="@+id/feed_rlFooter">
+      android:id="@+id/feed_rlPostFooter">
 
       <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/feed_llComments">
+        android:id="@+id/feed_llPostCommentorsAvatars"
+        android:visibility="gone"
+        android:layout_toRightOf="@+id/feed_llPostLikes">
 
         <ImageView
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
-          android:src="@drawable/comments"
-          android:scaleX="0.5"
-          android:scaleY="0.5"
-          android:id="@+id/feed_ivCommentIcon"/>
+          android:paddingLeft="1dp"
+          android:paddingRight="1dp"
+          android:src="@drawable/avatar_50"
+          android:id="@+id/feed_ivPostCommentorAvatar1"/>
 
-        <TextView
+        <ImageView
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
-          android:paddingBottom="3dp"
-          android:text="192"
-          android:id="@+id/feed_tvCommentsCount"/>
+          android:paddingLeft="1dp"
+          android:paddingRight="1dp"
+          android:src="@drawable/avatar_50"
+          android:id="@+id/feed_ivPostCommentorAvatar2"/>
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:paddingLeft="1dp"
+          android:paddingRight="1dp"
+          android:src="@drawable/avatar_50"
+          android:id="@+id/feed_ivPostCommentorAvatar3"/>
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:paddingLeft="1dp"
+          android:paddingRight="1dp"
+          android:src="@drawable/avatar_50"
+          android:id="@+id/feed_ivPostCommentorAvatar4"/>
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:paddingLeft="1dp"
+          android:paddingRight="1dp"
+          android:src="@drawable/avatar_50"
+          android:id="@+id/feed_ivPostCommentorAvatar5"/>
+
+        <ImageView
+          style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+          android:paddingLeft="1dp"
+          android:paddingRight="1dp"
+          android:src="@drawable/avatar_50"
+          android:id="@+id/feed_ivPostCommentorAvatar6"/>
+
+
 
       </LinearLayout>
 
@@ -196,8 +219,9 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="5dp"
         android:orientation="horizontal"
-        android:id="@+id/feed_llLikes"
-        android:layout_alignParentRight="true">
+        android:layout_centerVertical="true"
+        android:id="@+id/feed_llPostLikes"
+        android:layout_alignParentLeft="true">
 
         <ImageView
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
@@ -205,13 +229,13 @@
           android:src="@drawable/like"
           android:scaleX="0.5"
           android:scaleY="0.5"
-          android:id="@+id/feed_ivLikeIcon"
+          android:id="@+id/feed_ivPostLikeIcon"
           />
 
         <TextView
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
           android:text="192"
-          android:id="@+id/feed_tvLikesCount"/>
+          android:id="@+id/feed_tvPostLikesCount"/>
 
       </LinearLayout>
 
@@ -219,22 +243,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/feed_llReposts"
-        android:layout_toLeftOf="@id/feed_llLikes">
+        android:id="@+id/feed_llPostReposts"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true">
 
         <ImageView
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
           android:scaleX="0.5"
           android:scaleY="0.5"
           android:src="@drawable/reposts"
-          android:id="@+id/feed_ivRepostIcon"
+          android:id="@+id/feed_ivPostRepostIcon"
           />
 
         <TextView
           style="@style/AppTheme.TextView.FeedsItemFooterCounts"
           android:layout_width="40dp"
           android:text="192"
-          android:id="@+id/feed_tvRepostsCount"/>
+          android:id="@+id/feed_tvPostRepostsCount"/>
 
       </LinearLayout>
 
@@ -245,5 +270,14 @@
 
   </LinearLayout>
 
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="3dp"
+    android:layout_below="@+id/feed_llPostFooter"
+    android:background="@color/feed_footerDivider" />
+
 
 </RelativeLayout>
+
+  </ScrollView>

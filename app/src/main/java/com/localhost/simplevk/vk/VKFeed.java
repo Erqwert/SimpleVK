@@ -20,6 +20,11 @@ public class VKFeed implements Parcelable{
   }
 
   /**
+   * Flag: if feed from user - flag is true
+   */
+  public boolean isUserFeed;
+
+  /**
    * Name of source (user or group)
    */
   public String source_name;
@@ -177,6 +182,7 @@ public class VKFeed implements Parcelable{
    * Creates a Post instance from Parcel.
    */
   public VKFeed(Parcel in) {
+    this.isUserFeed = in.readByte() != 0;
     this.source_id = in.readInt();
     this.source_name = in.readString();
     this.source_avatar50URL = in.readString();
@@ -205,6 +211,7 @@ public class VKFeed implements Parcelable{
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
+    dest.writeByte(this.isUserFeed ? (byte) 1 : (byte) 0);
     dest.writeInt(this.source_id);
     dest.writeString(this.source_name);
     dest.writeString(source_avatar50URL);

@@ -45,6 +45,10 @@ public class VKSource implements Parcelable {
     return avatar50URL;
   }
 
+  public void setId(int id) {
+    this.id = id;
+  }
+
   /**
    * Parse JSON method
    * @param source

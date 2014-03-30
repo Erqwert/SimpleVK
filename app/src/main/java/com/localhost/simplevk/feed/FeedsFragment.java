@@ -21,6 +21,7 @@ import com.vk.sdk.VKSdk;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ItemClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
@@ -56,11 +57,13 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
   ArrayList<VKFeed> vkFeeds;
 
-  private boolean loading = false;
+  private boolean feeds_loading = false;
   private String new_from;
   private String new_offset;
   private int current_position = 0;
   private int top_position = 0;
+
+  private boolean post_loading = false;
 
   /**
    * After user Pulls Pull-to-refresh - we launch a background task to get Feeds or
@@ -70,13 +73,13 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   @Override
   public void onRefreshStarted(View view) {
     if(Utils.isNetworkAvailable(getActivity())){
-      loading = true;
+      feeds_loading = true;
       current_position = 0;
       top_position = 0;
       feedListAdapter.resetVkFeeds();
       feedsTasksFragment.getFeeds(null);
     }else{
-      loading = false;
+      feeds_loading = false;
       feed_pullToRefreshLayout.setRefreshComplete();
       Toast.makeText(getActivity(), "Сеть недоступна", Toast.LENGTH_SHORT).show();
     }
@@ -121,16 +124,20 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
-    // Saving state of current position and top position to Bundle
-    outState.putInt(FEEDS_LIST_CURRENT_POSITION_TAG, feed_ListView.getFirstVisiblePosition());
-    outState.putInt(FEEDS_LIST_TOP_POSITION_TAG, getTopPosition());
+    if(null != vkFeeds) {
+      // Saving state of current position and top position to Bundle
 
-    // Saving vkFeeds list to Bundle
-    vkFeeds = feedListAdapter.getFeeds();
-    outState.putParcelableArrayList(FEEDS_LIST_CONTENT_TAG, vkFeeds);
+      outState.putInt(FEEDS_LIST_CURRENT_POSITION_TAG, feed_ListView.getFirstVisiblePosition());
+      outState.putInt(FEEDS_LIST_TOP_POSITION_TAG, getTopPosition());
 
-    // Saving vkResponse new_from string
-    outState.putString(FEEDS_LIST_NEW_FROM_TAG, new_from);
+
+      // Saving vkFeeds list to Bundle
+      vkFeeds = feedListAdapter.getFeeds();
+      outState.putParcelableArrayList(FEEDS_LIST_CONTENT_TAG, vkFeeds);
+
+      // Saving vkResponse new_from string
+      outState.putString(FEEDS_LIST_NEW_FROM_TAG, new_from);
+    }
   }
 
   /**
@@ -179,6 +186,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       feed_ListView.setAdapter(feedListAdapter);
       feedListAdapter.setVkFeeds(vkFeeds);
       feed_ListView.setSelectionFromTop(current_position, top_position);
+
     }else {
       initAdapter();
     }
@@ -201,8 +209,8 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
         if(isScrolling) {
           int lastInScreen = firstVisibleItem + visibleItemCount;
-          if ((lastInScreen >= totalItemCount) && !(loading)) {
-            loading = true;
+          if ((lastInScreen >= totalItemCount) && !(feeds_loading)) {
+            feeds_loading = true;
             current_position = feed_ListView.getFirstVisiblePosition();
             top_position = getTopPosition();
             feedsTasksFragment.getFeeds(new_from);
@@ -217,7 +225,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
    */
   public void initAdapter(){
     if(Utils.isNetworkAvailable(getActivity())){
-      loading = true;
+      feeds_loading = true;
       feedsTasksFragment.getFeeds(new_from);
     }
   }
@@ -274,10 +282,22 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 //      lvCalc_list.removeHeaderView(progressBar);
 //    }
 
-    loading = false;
+    feeds_loading = false;
 
     if(feed_pullToRefreshLayout.isRefreshing()){
       feed_pullToRefreshLayout.setRefreshComplete();
     }
+  }
+
+  @ItemClick(R.id.feed_ListView)
+  public void onItemClick(VKFeed vkFeed) {
+//    post_loading = true;
+//    String id;
+//    if(vkFeed.isUserFeed){
+//      id=String.valueOf(vkFeed.source_id) + "_" + String.valueOf(vkFeed.post_id);
+//    }else{
+//      id="-" + String.valueOf(vkFeed.source_id) + "_" + String.valueOf(vkFeed.post_id);
+//    }
+    feedsTasksFragment.getPost(vkFeed);
   }
 }
