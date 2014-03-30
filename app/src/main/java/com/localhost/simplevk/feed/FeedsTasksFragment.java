@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class FeedsTasksFragment extends Fragment{
 
   VKRequest newsFeedRequest;
-  private static final int VKREQUEST_FEEDS_COUNT = 50;
+  private static final int VKREQUEST_FEEDS_COUNT = 5;
 
   private static final String TAG = "FeedsTasksFragment";
 
@@ -113,6 +113,7 @@ public class FeedsTasksFragment extends Fragment{
    * Here we parse response and send result to MainActivity
    * @param response
    */
+  @SuppressWarnings("VariableMayNotBeInitialized")
   @Background
   public void parseVKResponse(VKResponse response){
     ArrayList<VKFeed> vkFeeds = new ArrayList<>();
@@ -143,7 +144,7 @@ public class FeedsTasksFragment extends Fragment{
         vkSources.add(vkSource);
       }
 
-
+      // Fill each VKFeed with data
       JSONArray jsonArrayOfItems = jsonResponse.getJSONArray("items");
       for (int i = 0; i < jsonArrayOfItems.length(); i++) {
         VKFeed vkFeed = new VKFeed();
@@ -155,7 +156,15 @@ public class FeedsTasksFragment extends Fragment{
           if(vkSource.getId() == Math.abs(vkFeed.source_id)){
             // need to test negative group id
             vkFeed.setSourceData(vkSource);
-            break;
+            //break;
+          }
+          //todo OPTIMIZE
+          if (null != vkFeed.copy_history) {
+
+            if (vkSource.getId() == Math.abs(vkFeed.copy_history.get(0).from_id)) {
+              vkFeed.copy_history.get(0).setSourceData(vkSource);
+
+            }
           }
         }
 

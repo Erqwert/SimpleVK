@@ -9,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.localhost.simplevk.R;
-import com.localhost.simplevk.vk.VKFeed;
 import com.localhost.simplevk.vk.VKRepost;
 import com.squareup.picasso.Picasso;
 import com.vk.sdk.api.model.VKApiLink;
@@ -22,10 +21,15 @@ import org.androidannotations.annotations.ViewById;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@EViewGroup(R.layout.feeds_item)
-public class FeedsItemView extends RelativeLayout {
+@EViewGroup(R.layout.repost_item)
+public class RepostView extends RelativeLayout {
 
   Context context;
+
+  public RepostView(Context context) {
+    super(context);
+    this.context=context;
+  }
 
   @ViewById
   protected ImageView feed_ivAvatar;
@@ -38,18 +42,6 @@ public class FeedsItemView extends RelativeLayout {
 
   @ViewById
   protected TextView feed_tvText;
-
-  @ViewById
-  protected TextView feed_tvCommentsCount;
-
-  @ViewById
-  protected TextView feed_tvRepostsCount;
-
-  @ViewById
-  protected TextView feed_tvLikesCount;
-
-  @ViewById
-  protected ImageView feed_ivLikeIcon;
 
   @ViewById
   protected ImageView feed_iv1stPhotoAttachment;
@@ -69,77 +61,33 @@ public class FeedsItemView extends RelativeLayout {
   @ViewById
   protected TextView feed_tvLinkURL;
 
-  @ViewById
-  protected LinearLayout feed_llFooter;
-
-  @ViewById
-  protected LinearLayout feed_llRepost;
-
-  public FeedsItemView(Context context) {
-    super(context);
-    this.context=context;
-  }
-
   /**
    * We set UI of each Feed here. Setting icons, names, texts, counts, photos, reposts etc.
-   * @param vkFeed
+   * @param vkRepost
    */
-  public void bind(VKFeed vkFeed) {
+  public void bind(VKRepost vkRepost) {
     // Header
 
     // Set avatar from URL
-    Picasso.with(context).load(vkFeed.source_avatar100URL).into(feed_ivAvatar);
+    Picasso.with(context).load(vkRepost.source_avatar100URL).resize(90, 90).into(feed_ivAvatar);
     // Set group/user name
-    feed_tvName.setText(vkFeed.source_name);
+    feed_tvName.setText(vkRepost.source_name);
     // Set feed date
-    setFeedDate(feed_tvDate, vkFeed.date);
-
+    setFeedDate(feed_tvDate, vkRepost.date);
 
     // Body
 
 
     // Set feed text
-    setFeedText(feed_tvText, vkFeed.text);
+    setFeedText(feed_tvText, vkRepost.text);
     // Set attachments
-    if(null != vkFeed.attachments) {
-      setAttachments(vkFeed.attachments);
-    }
-
-    // Repost
-    if(null != vkFeed.copy_history){
-      feed_llRepost.addView(getRepostView(vkFeed.copy_history.get(0)));
-      //Log.i("copies: ", vkFeed.copy_history.size()+"");
-      feed_llRepost.setVisibility(VISIBLE);
-    }else{
-      initRepost();
+    if(null != vkRepost.attachments) {
+      setAttachments(vkRepost.attachments);
     }
 
 
-    // Footer
-
-    // Set feed's comments count
-    feed_tvCommentsCount.setText(String.valueOf(vkFeed.comments_count));
-    // Set feed's reposts count
-    feed_tvRepostsCount.setText(String.valueOf(vkFeed.reposts_count));
-    // Set feed's likes count
-    feed_tvLikesCount.setText(String.valueOf(vkFeed.likes_count));
-    // Set liked icon
-    feed_ivLikeIcon.setImageResource(vkFeed.user_likes ? R.drawable.liked : R.drawable.like);
-
   }
 
-  private RepostView getRepostView(VKRepost vkRepost){
-    RepostView repostView = RepostView_.build(context);
-
-    repostView.bind(vkRepost);
-    return repostView;
-  }
-
-  /**
-   * Prints date in VKFeed or VKPost
-   * @param textView
-   * @param unixTime
-   */
   private void setFeedDate(TextView textView, long unixTime){
     long dateTimeInMillis = unixTime*1000;
 
@@ -151,11 +99,6 @@ public class FeedsItemView extends RelativeLayout {
     }
   }
 
-  /**
-   * Sets Feed's body text and make it VISIBLE if needed
-   * @param textView
-   * @param text
-   */
   private void setFeedText(TextView textView, String text){
     // Todo shorten text if it's too large
     textView.setVisibility(text.equals("") ? GONE : VISIBLE);
@@ -210,9 +153,5 @@ public class FeedsItemView extends RelativeLayout {
   private void initAttachments(){
     feed_llPhotoAttachments.setVisibility(GONE);
     feed_llLinkAttachments.setVisibility(GONE);
-  }
-
-  private void initRepost(){
-    feed_llRepost.setVisibility(GONE);
   }
 }

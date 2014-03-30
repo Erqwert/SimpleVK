@@ -7,6 +7,7 @@ import com.vk.sdk.api.model.ParseUtils;
 import com.vk.sdk.api.model.VKApiPlace;
 import com.vk.sdk.api.model.VKAttachments;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -111,8 +112,7 @@ public class VKFeed implements Parcelable{
   /**
    * List of history of the reposts.
    */
-  // todo check copy history
-  public ArrayList<VKFeed> copy_history;
+  public ArrayList<VKRepost> copy_history;
 
   /**
    * Setter for vkSourse
@@ -155,12 +155,21 @@ public class VKFeed implements Parcelable{
 
     attachments.fill(source.optJSONArray("attachments"));
 
-
     JSONObject geo = source.optJSONObject("geo");
     if(null != geo) {
       this.geo = new VKApiPlace().parse(geo);
     }
-    //copy_history = new VKList<VKApiPost>(source.optJSONArray("copy_history"), VKApiPost.class);
+
+    JSONArray history = source.optJSONArray("copy_history");
+    if (null != history){
+      copy_history = new ArrayList<>();
+      for (int i = 0; i < history.length(); i++) {
+        VKRepost vkRepost = new VKRepost();
+        vkRepost.parse(history.getJSONObject(i));
+        copy_history.add(vkRepost);
+      }
+    }
+
     return this;
   }
 
@@ -186,6 +195,7 @@ public class VKFeed implements Parcelable{
     this.post_type = in.readString();
     this.attachments = in.readParcelable(VKAttachments.class.getClassLoader());
     this.geo = in.readParcelable(VKApiPlace.class.getClassLoader());
+    this.copy_history = in.readArrayList(VKRepost.class.getClassLoader());
   }
 
   @Override
@@ -213,6 +223,7 @@ public class VKFeed implements Parcelable{
     dest.writeString(this.post_type);
     dest.writeParcelable(attachments, flags);
     dest.writeParcelable(this.geo, flags);
+    dest.writeTypedList(this.copy_history);
   }
 
   public static Parcelable.Creator<VKFeed> CREATOR = new Parcelable.Creator<VKFeed>() {
