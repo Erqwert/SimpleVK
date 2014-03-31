@@ -11,11 +11,14 @@ IMPLEMENTED:
 - New Feeds loading after reaching end of list
 - Pictures caching
 - Data caching (for screen rotation etc)
+- Screen rotation handling
+- All Network task run in Background
 
 LIBRARIES USED:
 - Picasso
 - AndroidAnnotations
 - Support Library
+- VK-Android-SDK
 
 KNOWN BUGS:
 - NullPointerException after 2x rotate in PostFragment (Feed fragment isHidden
