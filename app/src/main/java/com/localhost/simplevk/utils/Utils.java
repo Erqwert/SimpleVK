@@ -16,6 +16,7 @@ import java.util.Date;
 
 public class Utils {
 
+
   /**
    * Sets Feed's body text and make it VISIBLE if needed
    *
@@ -26,6 +27,28 @@ public class Utils {
     // Todo shorten text if it's too large
     textView.setVisibility(text.equals("") ? View.GONE : View.VISIBLE);
     textView.setText(text);
+  }
+
+  /**
+   * Sets Comments's body text and make it VISIBLE if needed
+   *
+   * @param textView
+   * @param text
+   */
+  public static void setCommentText(TextView textView, String text) {
+    // Todo shorten text if it's too large
+    textView.setVisibility(text.equals("") ? View.GONE : View.VISIBLE);
+
+    int startIndex = text.indexOf("[");
+    if(startIndex == 0) {
+      int endIndex = text.indexOf("|");
+      String replacement = "";
+      String toBeReplaced = text.substring(startIndex, endIndex+1);
+      text = text.replace("],", ",");
+      textView.setText(text.replace(toBeReplaced, replacement));
+    }else {
+      textView.setText(text);
+    }
   }
 
   /**

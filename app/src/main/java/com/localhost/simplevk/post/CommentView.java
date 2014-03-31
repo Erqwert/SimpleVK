@@ -83,7 +83,7 @@ public class CommentView extends RelativeLayout {
     // Body
 
     // Set feed text
-    Utils.setFeedText(post_tvCommentText, vkComment.text);
+    Utils.setCommentText(post_tvCommentText, vkComment.text);
     // Set attachments
     if (null != vkComment.attachments) {
       setAttachments(vkComment.attachments);
