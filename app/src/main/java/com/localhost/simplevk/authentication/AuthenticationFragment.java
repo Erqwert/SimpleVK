@@ -20,7 +20,7 @@ import org.androidannotations.annotations.EFragment;
 import java.net.URLEncoder;
 
 @EFragment(R.layout.fragment_authentication)
-public class AuthenticationFragment extends Fragment{
+public class AuthenticationFragment extends Fragment {
 
   private static final String APP_ID = "4255934";
   private static final String REDIRECT_URL = "http://oauth.vk.com/blank.html";
@@ -34,6 +34,7 @@ public class AuthenticationFragment extends Fragment{
    * Dynamically adding WebView to container.
    * If we loaded after configuration change - we restore cached page contents from Bundle
    * or loadURL otherwise.
+   *
    * @param inflater
    * @param container
    * @param savedInstanceState
@@ -47,7 +48,7 @@ public class AuthenticationFragment extends Fragment{
     container.addView(webView);
 
     if (null == savedInstanceState) {
-      webView.loadUrl("http://oauth.vk.com/authorize?client_id=" + APP_ID + "&scope=" + SCOPE + "&redirect_uri="+ URLEncoder.encode(REDIRECT_URL) + "&response_type=token");
+      webView.loadUrl("http://oauth.vk.com/authorize?client_id=" + APP_ID + "&scope=" + SCOPE + "&redirect_uri=" + URLEncoder.encode(REDIRECT_URL) + "&response_type=token");
     } else {
       webView.restoreState(savedInstanceState);
     }
@@ -59,7 +60,7 @@ public class AuthenticationFragment extends Fragment{
    * Initializing WebView so we can load URLs or restore state, and make it VISIBLE
    */
   @SuppressLint("SetJavaScriptEnabled")
-  protected void initWebView(){
+  protected void initWebView() {
     webView = new WebView(getActivity());
     webView.getSettings().setJavaScriptEnabled(true);
     webView.setVerticalScrollBarEnabled(false);
@@ -71,6 +72,7 @@ public class AuthenticationFragment extends Fragment{
 
   /**
    * Setter for VKSdkListener
+   *
    * @param vkSdkListener
    */
   public void setVkSdkListener(VKSdkListener vkSdkListener) {
@@ -85,6 +87,7 @@ public class AuthenticationFragment extends Fragment{
 
   /**
    * onSaveInstanceState we cache page contents to Bundle
+   *
    * @param outState
    */
   @Override
@@ -106,6 +109,7 @@ public class AuthenticationFragment extends Fragment{
 
   /**
    * After we successfully parse URL - we initialize VKSdk and hide WebView.
+   *
    * @param url
    */
   private void parseUrl(String url) {
@@ -117,7 +121,7 @@ public class AuthenticationFragment extends Fragment{
         if (!url.contains("error")) {
           webView.setVisibility(View.GONE);
 
-          url = url.replace(REDIRECT_URL+"#", "");
+          url = url.replace(REDIRECT_URL + "#", "");
 
           VKSdk.initialize(vkSdkListener, APP_ID, VKAccessToken.tokenFromUrlString(url));
         } else {

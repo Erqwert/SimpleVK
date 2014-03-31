@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends ActionBarActivity implements FragmentSavedState, FeedsFragment.FeedFragmentCallbacks, FeedsTasksFragment.GetFeedsActivityCallbacks{
+public class MainActivity extends ActionBarActivity implements FragmentSavedState, FeedsFragment.FeedFragmentCallbacks, FeedsTasksFragment.GetFeedsActivityCallbacks {
 
   private static final String TAG = "MainActivity";
 
@@ -39,12 +39,12 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
   int currentFragmentId = -1;
 
-  private boolean isAfterConfigurationChanged =false;
-  private static final String IS_AFTER_CONFIGURATION_CHANGED_TAG ="isAfterConfigurationChanged";
+  private boolean isAfterConfigurationChanged = false;
+  private static final String IS_AFTER_CONFIGURATION_CHANGED_TAG = "isAfterConfigurationChanged";
   private int fragmentBeforeConfigurationChanged = -1;
-  private static final String FRAGMENT_BEFORE_CONFIGURATION_CHANGED_TAG ="fragmentBeforeConfigurationChanged";
+  private static final String FRAGMENT_BEFORE_CONFIGURATION_CHANGED_TAG = "fragmentBeforeConfigurationChanged";
   HashMap<String, Fragment.SavedState> savedStateMap;
-  private static final String SAVED_STATE_TAG ="savedState";
+  private static final String SAVED_STATE_TAG = "savedState";
 
   VKSdkListener vkSdkListener;
   private static final String APP_ID = "4255934";
@@ -54,21 +54,23 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
   /**
    * Saves current state of fragment
-   * @param key fragment class name
+   *
+   * @param key   fragment class name
    * @param state fragment's state
    */
-  public void setFragmentSavedState(String key, Fragment.SavedState state){
+  public void setFragmentSavedState(String key, Fragment.SavedState state) {
     savedStateMap.put(key, state);
-    Log.i(TAG, "Saved state for "+key);
+    Log.i(TAG, "Saved state for " + key);
   }
 
   /**
    * Loads saved state of fragment
+   *
    * @param key fragment class name
    * @return fragment's saved state
    */
-  public Fragment.SavedState getFragmentSavedState(String key){
-    Log.i(TAG, "Loaded state for "+key);
+  public Fragment.SavedState getFragmentSavedState(String key) {
+    Log.i(TAG, "Loaded state for " + key);
     return savedStateMap.get(key);
   }
 
@@ -99,13 +101,14 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
       if (fragmentBeforeConfigurationChanged != -1) {
         goToFragment(fragmentBeforeConfigurationChanged);
       }
-    }else {
+    } else {
       goToStartFragment();
     }
   }
 
   /**
    * Saving current state to Bundle so after configuration change we load fragment we was on before.
+   *
    * @param outState Bundle
    */
   @Override
@@ -118,47 +121,48 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
   /**
    * Loads desired fragment and sets Listeners if needed
+   *
    * @param fragmentId id of desired fragment
    */
   public void goToFragment(int fragmentId) {
-    if(fragmentId != currentFragmentId){
+    if (fragmentId != currentFragmentId) {
       currentFragmentId = fragmentId;
-      String fragmentTAG=appFragmentFactory.assignTAG(fragmentId);
+      String fragmentTAG = appFragmentFactory.assignTAG(fragmentId);
 
       FragmentManager fragmentManager = getSupportFragmentManager();
       Fragment destinationFragment = fragmentManager.findFragmentByTag(fragmentTAG);
 
-      if(destinationFragment==null){
+      if (destinationFragment == null) {
         destinationFragment = appFragmentFactory.newFragmentById(fragmentId);
-        Log.i(TAG, "destinationFragment=null, creating new fragment "+appFragmentFactory.assignTAG(currentFragmentId));
+        Log.i(TAG, "destinationFragment=null, creating new fragment " + appFragmentFactory.assignTAG(currentFragmentId));
         //if(destinationFragment instanceof AuthenticationFragment_){
-          //destinationFragment.setInitialSavedState(getFragmentSavedState(destinationFragment.getClass().getSimpleName()));
-          //Log.i(TAG, "Set initial state for "+destinationFragment.getClass().getSimpleName());
+        //destinationFragment.setInitialSavedState(getFragmentSavedState(destinationFragment.getClass().getSimpleName()));
+        //Log.i(TAG, "Set initial state for "+destinationFragment.getClass().getSimpleName());
         //}
         if (fragmentManager.getBackStackEntryCount() > 0) {
           fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-        if(destinationFragment instanceof  PostFragment_){
+        if (destinationFragment instanceof PostFragment_) {
           fragmentManager.beginTransaction()
             .replace(R.id.activity_main_container, destinationFragment, fragmentTAG)
             .addToBackStack("post")
             .commit();
-        }else {
+        } else {
 
           fragmentManager.beginTransaction()
             .replace(R.id.activity_main_container, destinationFragment, fragmentTAG)
             .commit();
         }
-      }else if(destinationFragment.isAdded()){
+      } else if (destinationFragment.isAdded()) {
         fragmentManager.beginTransaction()
           .show(destinationFragment)
           .commit();
-        Log.i(TAG, "destinationFragment is already added, showing fragment "+appFragmentFactory.assignTAG(currentFragmentId));
+        Log.i(TAG, "destinationFragment is already added, showing fragment " + appFragmentFactory.assignTAG(currentFragmentId));
       }
-      if(destinationFragment instanceof AuthenticationFragment_) {
+      if (destinationFragment instanceof AuthenticationFragment_) {
         ((AuthenticationFragment_) destinationFragment).setVkSdkListener(vkSdkListener);
       }
-      if(destinationFragment instanceof PostFragment_ && null != vkFeed) {
+      if (destinationFragment instanceof PostFragment_ && null != vkFeed) {
         ((PostFragment_) destinationFragment).setVkFeed(vkFeed);
       }
     }
@@ -167,10 +171,10 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
   /**
    * Loads start fragment depending on if user is logged or not
    */
-  public void goToStartFragment(){
-    if(!VKSdk.isLoggedIn()){
+  public void goToStartFragment() {
+    if (!VKSdk.isLoggedIn()) {
       goToFragment(R.id.fragment_authentication);
-    }else{
+    } else {
       goToFragment(R.id.fragment_feeds);
     }
   }
@@ -179,7 +183,7 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
    * VKSdkListener initialization. On AuthOK we load FeedsFragment and save access_toke to
    * SharedPreferences
    */
-  private void initVKSdkListener(){
+  private void initVKSdkListener() {
     vkSdkListener = new VKSdkListener() {
       @Override
       public void onCaptchaError(VKError captchaError) {
@@ -193,7 +197,7 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
       @Override
       public void onAccessDenied(VKError authorizationError) {
-        Log.i("TestAuthFragment", "onAccessDenied, Error: "+authorizationError.errorReason+" "+authorizationError.errorMessage );
+        Log.i("TestAuthFragment", "onAccessDenied, Error: " + authorizationError.errorReason + " " + authorizationError.errorMessage);
       }
 
       /**
@@ -207,7 +211,7 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
         getSupportActionBar().show();
         token.saveTokenToSharedPreferences(getApplicationContext(), VK_SDK_ACCESS_TOKEN_PREF_KEY);
         goToFragment(R.id.fragment_feeds);
-        Log.i("MainActivity", "Auth OK! token: "+token.accessToken+" user_id: "+token.userId);
+        Log.i("MainActivity", "Auth OK! token: " + token.accessToken + " user_id: " + token.userId);
       }
     };
   }
@@ -222,7 +226,7 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     currentFragmentId = R.id.fragment_feeds;
     Fragment feedsFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);
     if (feedsFragment instanceof FeedsFragment) {
-      ((FeedsFragment)feedsFragment).setPosition();
+      ((FeedsFragment) feedsFragment).setPosition();
     }
   }
 
@@ -265,18 +269,20 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
   /**
    * Callback metod - after we got feeds from asyncTask - we update UI.
+   *
    * @param vkFeeds
    */
   @Override
   public void onVKResponseParsed(ArrayList<VKFeed> vkFeeds, String new_from, String new_offset) {
     Fragment feedsFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);
     if (feedsFragment instanceof FeedsFragment) {
-      ((FeedsFragment)feedsFragment).processVKResponseParsedResult(vkFeeds, new_from, new_offset);
+      ((FeedsFragment) feedsFragment).processVKResponseParsedResult(vkFeeds, new_from, new_offset);
     }
   }
 
   /**
    * Callback metod - after we got feed from asyncTask - we update show fragment_post.
+   *
    * @param vkFeed
    */
   @Override
@@ -287,13 +293,14 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
 
   /**
    * Callback metod - after we got comments from asyncTask - we update UI.
+   *
    * @param vkComments
    */
   @Override
   public void onGetComments(ArrayList<VKApiComment> vkComments) {
     Fragment postFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);
     if (postFragment instanceof PostFragment) {
-      ((PostFragment)postFragment).processCommentsParsedResult(vkComments);
+      ((PostFragment) postFragment).processCommentsParsedResult(vkComments);
     }
   }
 }

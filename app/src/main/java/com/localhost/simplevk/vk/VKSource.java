@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class VKSource implements Parcelable {
 
-  public VKSource(){
+  public VKSource() {
 
   }
 
@@ -51,6 +51,7 @@ public class VKSource implements Parcelable {
 
   /**
    * Parse JSON method
+   *
    * @param source
    * @return
    * @throws JSONException
@@ -59,10 +60,10 @@ public class VKSource implements Parcelable {
     id = source.optInt("id");
 
     String jsonName = source.optString("name", "");
-    if(!jsonName.equals("")) {
+    if (!jsonName.equals("")) {
       name = source.optString("name");
-    }else{
-      name = source.optString("first_name")+" "+source.optString("last_name");
+    } else {
+      name = source.optString("first_name") + " " + source.optString("last_name");
     }
 
     avatar50URL = source.optString("photo_50");

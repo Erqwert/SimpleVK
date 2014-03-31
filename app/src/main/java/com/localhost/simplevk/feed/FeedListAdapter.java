@@ -14,7 +14,7 @@ import org.androidannotations.annotations.RootContext;
 import java.util.ArrayList;
 
 @EBean
-public class FeedListAdapter extends BaseAdapter{
+public class FeedListAdapter extends BaseAdapter {
 
   @RootContext
   protected Context context;
@@ -51,6 +51,7 @@ public class FeedListAdapter extends BaseAdapter{
 
   /**
    * Here we use a ViewHolder pattern to get view by position
+   *
    * @param position
    * @param convertView
    * @param parent
@@ -67,16 +68,16 @@ public class FeedListAdapter extends BaseAdapter{
     return feedsItemView;
   }
 
-  public void setVkFeeds(ArrayList<VKFeed> vkFeeds){
-    if(this.vkFeeds.size() > 0 && null != vkFeeds){
+  public void setVkFeeds(ArrayList<VKFeed> vkFeeds) {
+    if (this.vkFeeds.size() > 0 && null != vkFeeds) {
       this.vkFeeds.addAll(vkFeeds);
-    }else{
+    } else {
       this.vkFeeds = vkFeeds;
     }
     notifyDataSetChanged();
   }
 
-  public void resetVkFeeds(){
+  public void resetVkFeeds() {
     this.vkFeeds = new ArrayList<>();
   }
 }

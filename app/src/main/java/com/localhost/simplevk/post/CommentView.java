@@ -28,7 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 @EViewGroup(R.layout.comment_item)
-public class CommentView extends RelativeLayout{
+public class CommentView extends RelativeLayout {
   Context context;
 
   VKRequest getUserRequest;
@@ -72,6 +72,7 @@ public class CommentView extends RelativeLayout{
 
   /**
    * We set UI of each VKApiComment. Setting icons, names, texts, counts, photos etc.
+   *
    * @param vkComment
    */
   public void bind(VKApiComment vkComment) {
@@ -84,7 +85,7 @@ public class CommentView extends RelativeLayout{
     // Set feed text
     Utils.setFeedText(post_tvCommentText, vkComment.text);
     // Set attachments
-    if(null != vkComment.attachments) {
+    if (null != vkComment.attachments) {
       setAttachments(vkComment.attachments);
     }
 
@@ -100,25 +101,27 @@ public class CommentView extends RelativeLayout{
 
   /**
    * Set and display Comments's attachments
+   *
    * @param attachments
    */
-  private void setAttachments(VKAttachments attachments){
+  private void setAttachments(VKAttachments attachments) {
     boolean has1stPhoto = false;
     boolean hasLink = false;
     initAttachments();
 
-    for(VKAttachments.VKApiAttachment attachment : attachments){
-      switch(attachment.getType()){
+    for (VKAttachments.VKApiAttachment attachment : attachments) {
+      switch (attachment.getType()) {
         case VKAttachments.TYPE_PHOTO:
-          if(!has1stPhoto){
+          if (!has1stPhoto) {
             Transformation transformation = new Transformation() {
 
-              @Override public Bitmap transform(Bitmap source) {
+              @Override
+              public Bitmap transform(Bitmap source) {
                 int targetWidth = feed_llPhotoAttachments.getWidth();
 
                 double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
                 int targetHeight = (int) (targetWidth * aspectRatio);
-                if(source.getHeight() >= source.getWidth()){
+                if (source.getHeight() >= source.getWidth()) {
                   return source;
                 }
                 Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
@@ -129,20 +132,21 @@ public class CommentView extends RelativeLayout{
                 return result;
               }
 
-              @Override public String key() {
+              @Override
+              public String key() {
                 return "transformation" + " desiredWidth";
               }
             };
-            Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
+            Picasso.with(context).load(((VKApiPhoto) attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
             feed_llPhotoAttachments.setVisibility(VISIBLE);
             has1stPhoto = true;
           }
           break;
         case VKAttachments.TYPE_LINK:
-          if(!hasLink) {
-            if(((VKApiLink) attachment).title.equals("")) {
+          if (!hasLink) {
+            if (((VKApiLink) attachment).title.equals("")) {
               feed_tvLinkName.setText("Ссылка");
-            }else{
+            } else {
               feed_tvLinkName.setText(((VKApiLink) attachment).title);
             }
             String url = ((VKApiLink) attachment).url;
@@ -163,7 +167,7 @@ public class CommentView extends RelativeLayout{
   /**
    * We set attachments field to GONE so if view was recycled - it will be empty.
    */
-  private void initAttachments(){
+  private void initAttachments() {
     feed_llPhotoAttachments.setVisibility(GONE);
     feed_llLinkAttachments.setVisibility(GONE);
   }
@@ -171,10 +175,11 @@ public class CommentView extends RelativeLayout{
 
   /**
    * Background method which loads user data and parse it onComplete
+   *
    * @param id
    */
   @Background
-  public void getAvatarAndName(int id){
+  public void getAvatarAndName(int id) {
     getUserRequest = new VKRequest("users.get", VKParameters.from("user_ids", String.valueOf(id), "fields", "photo_100"));
     getUserRequest.executeWithListener(new VKRequest.VKRequestListener() {
       @Override
@@ -206,10 +211,11 @@ public class CommentView extends RelativeLayout{
   /**
    * Method parses VKResponse from get user data and updates Comments UI
    * (avatars and names)
+   *
    * @param response
    */
-  public void parseGetUserResponse(VKResponse response){
-    try{
+  public void parseGetUserResponse(VKResponse response) {
+    try {
       JSONArray jsonArrayOfUsers = response.json.getJSONArray("response");
 
       String last_name = jsonArrayOfUsers.getJSONObject(0).optString("last_name");
@@ -219,7 +225,7 @@ public class CommentView extends RelativeLayout{
       String URL = jsonArrayOfUsers.getJSONObject(0).optString("photo_100");
       Picasso.with(context).load(URL).into(post_ivCommenterAvatar);
 
-    }catch (JSONException e) {
+    } catch (JSONException e) {
       Log.e("getAvatarAndName", String.valueOf(e.getMessage()));
     }
   }

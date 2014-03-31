@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 @EFragment
-public class FeedsTasksFragment extends Fragment{
+public class FeedsTasksFragment extends Fragment {
 
   VKRequest newsFeedRequest;
   VKRequest commentsRequest;
@@ -40,17 +40,20 @@ public class FeedsTasksFragment extends Fragment{
    */
   public static interface GetFeedsActivityCallbacks {
     void onVKResponseParsed(ArrayList<VKFeed> VKFeeds, String new_from, String new_offset);
+
     void onGetPostRequest(VKFeed vkFeed);
+
     void onGetComments(ArrayList<VKApiComment> vkComments);
   }
 
   @AfterInject
-  protected void init(){
+  protected void init() {
 
   }
 
   /**
    * Set callbacks to activity
+   *
    * @param activity
    */
   @Override
@@ -61,6 +64,7 @@ public class FeedsTasksFragment extends Fragment{
 
   /**
    * We retain this fragment so it won't get destroyed on Activity's onDestroy()
+   *
    * @param savedInstanceState
    */
   @Override
@@ -82,11 +86,11 @@ public class FeedsTasksFragment extends Fragment{
    * Background task to getFeeds. Starts parsing method onComplete
    */
   @Background
-  public void getFeeds(String new_from){
-    if(null != new_from){
+  public void getFeeds(String new_from) {
+    if (null != new_from) {
       Log.i(TAG, "new_from: " + new_from);
       newsFeedRequest = new VKRequest("newsfeed.get", VKParameters.from("from", new_from, "filters", "post", VKApiConst.COUNT, VKREQUEST_FEEDS_COUNT, "return_banned", 0));
-    }else {
+    } else {
       newsFeedRequest = new VKRequest("newsfeed.get", VKParameters.from("filters", "post", VKApiConst.COUNT, VKREQUEST_FEEDS_COUNT, "return_banned", 0));
     }
     newsFeedRequest.executeWithListener(new VKRequest.VKRequestListener() {
@@ -116,8 +120,8 @@ public class FeedsTasksFragment extends Fragment{
     });
   }
 
-  public void getPost(VKFeed vkFeed){
-    if(null!=getFeedsActivityCallbacks) {
+  public void getPost(VKFeed vkFeed) {
+    if (null != getFeedsActivityCallbacks) {
       getFeedsActivityCallbacks.onGetPostRequest(vkFeed);
     }
   }
@@ -127,12 +131,12 @@ public class FeedsTasksFragment extends Fragment{
    * parseGetCommentsResponse(response) onComplete
    */
   @Background
-  public void getComments(VKFeed vkFeed){
+  public void getComments(VKFeed vkFeed) {
 
     int ownerId;
-    if(vkFeed.isUserFeed){
+    if (vkFeed.isUserFeed) {
       ownerId = vkFeed.source_id;
-    }else{
+    } else {
       ownerId = -vkFeed.source_id;
     }
 
@@ -167,14 +171,15 @@ public class FeedsTasksFragment extends Fragment{
 
   /**
    * Here we parse response and send result to MainActivity
+   *
    * @param response
    */
   @Background
-  public void parseGetFeedsResponse(VKResponse response){
+  public void parseGetFeedsResponse(VKResponse response) {
     ArrayList<VKFeed> vkFeeds = new ArrayList<>();
     ArrayList<VKSource> vkSources = new ArrayList<>();
-    String new_from="";
-    String new_offset="";
+    String new_from = "";
+    String new_offset = "";
 
     try {
       JSONObject jsonResponse = response.json.getJSONObject("response");
@@ -207,12 +212,12 @@ public class FeedsTasksFragment extends Fragment{
         // Retrieve JSON Objects
         vkFeed.parse(jsonArrayOfItems.getJSONObject(i));
 
-        for(VKSource vkSource : vkSources){
-          if(vkSource.getId() == Math.abs(vkFeed.source_id)){
+        for (VKSource vkSource : vkSources) {
+          if (vkSource.getId() == Math.abs(vkFeed.source_id)) {
             // need to write negative ids
-            if(vkFeed.source_id > 0) {
+            if (vkFeed.source_id > 0) {
               vkFeed.isUserFeed = true;
-            }else{
+            } else {
               vkFeed.isUserFeed = false;
             }
             vkFeed.setSourceData(vkSource);
@@ -244,17 +249,18 @@ public class FeedsTasksFragment extends Fragment{
 
 
     //When parsing is done - notify MainActivity
-    if(null!=getFeedsActivityCallbacks) {
+    if (null != getFeedsActivityCallbacks) {
       getFeedsActivityCallbacks.onVKResponseParsed(vkFeeds, new_from, new_offset);
     }
   }
 
   /**
    * Here we parse response and send result to MainActivity
+   *
    * @param response
    */
   @Background
-  public void parseGetCommentsResponse(VKResponse response){
+  public void parseGetCommentsResponse(VKResponse response) {
     ArrayList<VKApiComment> vkComments = new ArrayList<>();
 
     try {
@@ -267,11 +273,11 @@ public class FeedsTasksFragment extends Fragment{
         vkComments.add(vkComment);
       }
 
-    }catch (JSONException e) {
+    } catch (JSONException e) {
       Log.e(TAG, String.valueOf(e.getMessage()));
     }
 
-    if(null!=getFeedsActivityCallbacks) {
+    if (null != getFeedsActivityCallbacks) {
       getFeedsActivityCallbacks.onGetComments(vkComments);
     }
   }

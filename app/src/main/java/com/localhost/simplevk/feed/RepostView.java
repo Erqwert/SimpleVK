@@ -27,7 +27,7 @@ public class RepostView extends RelativeLayout {
 
   public RepostView(Context context) {
     super(context);
-    this.context=context;
+    this.context = context;
   }
 
   @ViewById
@@ -62,6 +62,7 @@ public class RepostView extends RelativeLayout {
 
   /**
    * We set UI of each repost here. Setting icons, names, texts, counts, photos etc.
+   *
    * @param vkRepost
    */
   public void bind(VKRepost vkRepost) {
@@ -79,7 +80,7 @@ public class RepostView extends RelativeLayout {
     // Set feed text
     Utils.setFeedText(feed_tvText, vkRepost.text);
     // Set attachments
-    if(null != vkRepost.attachments) {
+    if (null != vkRepost.attachments) {
       setAttachments(vkRepost.attachments);
     }
 
@@ -88,25 +89,27 @@ public class RepostView extends RelativeLayout {
 
   /**
    * Set and display Reposts's attachments
+   *
    * @param attachments
    */
-  private void setAttachments(VKAttachments attachments){
+  private void setAttachments(VKAttachments attachments) {
     boolean has1stPhoto = false;
     boolean hasLink = false;
     initAttachments();
 
-    for(VKAttachments.VKApiAttachment attachment : attachments){
-      switch(attachment.getType()){
+    for (VKAttachments.VKApiAttachment attachment : attachments) {
+      switch (attachment.getType()) {
         case VKAttachments.TYPE_PHOTO:
-          if(!has1stPhoto){
+          if (!has1stPhoto) {
             Transformation transformation = new Transformation() {
 
-              @Override public Bitmap transform(Bitmap source) {
+              @Override
+              public Bitmap transform(Bitmap source) {
                 int targetWidth = feed_llPhotoAttachments.getWidth();
 
                 double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
                 int targetHeight = (int) (targetWidth * aspectRatio);
-                if(source.getHeight() >= source.getWidth()){
+                if (source.getHeight() >= source.getWidth()) {
                   return source;
                 }
                 Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
@@ -117,20 +120,21 @@ public class RepostView extends RelativeLayout {
                 return result;
               }
 
-              @Override public String key() {
+              @Override
+              public String key() {
                 return "transformation" + " desiredWidth";
               }
             };
-            Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
+            Picasso.with(context).load(((VKApiPhoto) attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
             feed_llPhotoAttachments.setVisibility(VISIBLE);
             has1stPhoto = true;
           }
           break;
         case VKAttachments.TYPE_LINK:
-          if(!hasLink) {
-            if(((VKApiLink) attachment).title.equals("")) {
+          if (!hasLink) {
+            if (((VKApiLink) attachment).title.equals("")) {
               feed_tvLinkName.setText("Ссылка");
-            }else{
+            } else {
               feed_tvLinkName.setText(((VKApiLink) attachment).title);
             }
             String url = ((VKApiLink) attachment).url;
@@ -151,7 +155,7 @@ public class RepostView extends RelativeLayout {
   /**
    * We set attachments field to GONE so if view was recycled - it will be empty.
    */
-  private void initAttachments(){
+  private void initAttachments() {
     feed_llPhotoAttachments.setVisibility(GONE);
     feed_llLinkAttachments.setVisibility(GONE);
   }

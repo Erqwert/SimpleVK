@@ -30,7 +30,7 @@ import org.androidannotations.annotations.ViewById;
 import java.util.ArrayList;
 
 @EFragment(R.layout.fragment_post)
-public class PostFragment extends Fragment{
+public class PostFragment extends Fragment {
 
   VKFeed vkFeed;
   ArrayList<VKApiComment> vkComments;
@@ -86,13 +86,14 @@ public class PostFragment extends Fragment{
 
   public void setVkFeed(VKFeed vkFeed) {
 
-    if(null == this.vkFeed) {
+    if (null == this.vkFeed) {
       this.vkFeed = vkFeed;
     }
   }
 
   /**
    * Restoring savedInstanceState and start fillPost method.
+   *
    * @param savedInstanceState
    */
   @Override
@@ -104,18 +105,19 @@ public class PostFragment extends Fragment{
     FragmentManager fm = getActivity().getSupportFragmentManager();
     feedsTasksFragment = (FeedsTasksFragment) fm.findFragmentByTag(FEED_TASKS_FRAGMENT_TAG);
 
-    if(null != savedInstanceState){
+    if (null != savedInstanceState) {
       vkFeed = savedInstanceState.getParcelable(VKFEED_TAG);
       vkComments = savedInstanceState.getParcelableArrayList(VKCOMMENTS_TAG);
     }
 
-    if(null != vkFeed){
+    if (null != vkFeed) {
       fillPost(vkFeed);
     }
   }
 
   /**
    * Here we cache Feeds to Bundle for screen rotation etc.
+   *
    * @param outState
    */
   @Override
@@ -128,10 +130,11 @@ public class PostFragment extends Fragment{
 
   /**
    * Method updates Post UI (pictures, text, icons, counts etc.
+   *
    * @param vkFeed
    */
   @UiThread
-  protected void fillPost(VKFeed vkFeed){
+  protected void fillPost(VKFeed vkFeed) {
     // Header
 
     // Set avatar from URL
@@ -147,16 +150,16 @@ public class PostFragment extends Fragment{
     // Set feed text
     Utils.setFeedText(feed_tvPostText, vkFeed.text);
     // Set attachments
-    if(null != vkFeed.attachments) {
+    if (null != vkFeed.attachments) {
       setAttachments(vkFeed.attachments);
     }
 
     // Repost
-    if(null != vkFeed.copy_history){
+    if (null != vkFeed.copy_history) {
       feed_llPostRepost.addView(getRepostView(vkFeed.copy_history.get(0)));
       //Log.i("copies: ", vkFeed.copy_history.size()+"");
       feed_llPostRepost.setVisibility(View.VISIBLE);
-    }else{
+    } else {
       initRepost();
     }
 
@@ -168,9 +171,9 @@ public class PostFragment extends Fragment{
     // Set liked icon
     feed_ivPostLikeIcon.setImageResource(vkFeed.user_likes ? R.drawable.liked : R.drawable.like);
 
-    if(null != vkComments) {
+    if (null != vkComments) {
       setComments(vkComments);
-    }else {
+    } else {
       feedsTasksFragment.getComments(vkFeed);
     }
 
@@ -178,11 +181,12 @@ public class PostFragment extends Fragment{
 
   /**
    * Updating UI by setting adapter and stopping refreshing animation.
+   *
    * @param vkComments
    */
   @UiThread
-  public void processCommentsParsedResult(final ArrayList<VKApiComment> vkComments){
-    if(null != vkComments){
+  public void processCommentsParsedResult(final ArrayList<VKApiComment> vkComments) {
+    if (null != vkComments) {
       this.vkComments = vkComments;
     }
     setComments(vkComments);
@@ -190,31 +194,30 @@ public class PostFragment extends Fragment{
 
   /**
    * Adding new comment View for each comment
+   *
    * @param vkComments
    */
-  private void setComments(ArrayList<VKApiComment> vkComments){
-    if(null != vkComments && vkComments.size()>0){
+  private void setComments(ArrayList<VKApiComment> vkComments) {
+    if (null != vkComments && vkComments.size() > 0) {
       post_llCommentsContainer.setVisibility(View.VISIBLE);
       int i = 0;
-      for(VKApiComment comment : vkComments){
+      for (VKApiComment comment : vkComments) {
         post_llCommentsContainer.addView(getCommentView(comment));
         i++;
-        if(i>7){
+        if (i > 7) {
           break;
         }
       }
-//      for (int i = 0; i < 7; i++) {
-//        post_llCommentsContainer.addView(getCommentView(vkComments.get(i)));
-//      }
     }
   }
 
   /**
    * Constructor for CommentView.
+   *
    * @param vkComment
    * @return CommentView filled by data.
    */
-  private CommentView getCommentView(VKApiComment vkComment){
+  private CommentView getCommentView(VKApiComment vkComment) {
     CommentView commentView = CommentView_.build(getActivity());
 
     commentView.bind(vkComment);
@@ -223,10 +226,11 @@ public class PostFragment extends Fragment{
 
   /**
    * Constructor for RepostView.
+   *
    * @param vkRepost
    * @return RepostView filled by data.
    */
-  private RepostView getRepostView(VKRepost vkRepost){
+  private RepostView getRepostView(VKRepost vkRepost) {
     RepostView repostView = RepostView_.build(getActivity());
 
     repostView.bind(vkRepost);
@@ -236,26 +240,28 @@ public class PostFragment extends Fragment{
 
   /**
    * Set and display Feed's attachments (not complete)
+   *
    * @param attachments
    */
-  private void setAttachments(VKAttachments attachments){
+  private void setAttachments(VKAttachments attachments) {
     boolean has1stPhoto = false;
     boolean hasLink = false;
     initAttachments();
 
-    for(VKAttachments.VKApiAttachment attachment : attachments){
-      switch(attachment.getType()){
+    for (VKAttachments.VKApiAttachment attachment : attachments) {
+      switch (attachment.getType()) {
         case VKAttachments.TYPE_PHOTO:
-          if(!has1stPhoto){
+          if (!has1stPhoto) {
 
             Transformation transformation = new Transformation() {
 
-              @Override public Bitmap transform(Bitmap source) {
+              @Override
+              public Bitmap transform(Bitmap source) {
                 int targetWidth = feed_llPostPhotoAttachments.getWidth();
 
                 double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
                 int targetHeight = (int) (targetWidth * aspectRatio);
-                if(source.getHeight() >= source.getWidth()){
+                if (source.getHeight() >= source.getWidth()) {
                   return source;
                 }
                 Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
@@ -266,22 +272,23 @@ public class PostFragment extends Fragment{
                 return result;
               }
 
-              @Override public String key() {
+              @Override
+              public String key() {
                 return "transformation" + " desiredWidth";
               }
             };
 
-            Picasso.with(getActivity()).load(((VKApiPhoto)attachment).photo_604).transform(transformation).into(feed_ivPost1stPhotoAttachment);
+            Picasso.with(getActivity()).load(((VKApiPhoto) attachment).photo_604).transform(transformation).into(feed_ivPost1stPhotoAttachment);
 
             feed_llPostPhotoAttachments.setVisibility(View.VISIBLE);
             has1stPhoto = true;
           }
           break;
         case VKAttachments.TYPE_LINK:
-          if(!hasLink) {
-            if(((VKApiLink) attachment).title.equals("")) {
+          if (!hasLink) {
+            if (((VKApiLink) attachment).title.equals("")) {
               feed_tvPostLinkName.setText("Ссылка");
-            }else{
+            } else {
               feed_tvPostLinkName.setText(((VKApiLink) attachment).title);
             }
             String url = ((VKApiLink) attachment).url;
@@ -302,7 +309,7 @@ public class PostFragment extends Fragment{
   /**
    * We set attachments field to GONE so if view was recycled - it will be empty.
    */
-  private void initAttachments(){
+  private void initAttachments() {
     feed_llPostPhotoAttachments.setVisibility(View.GONE);
     feed_llPostLinkAttachments.setVisibility(View.GONE);
   }
@@ -310,7 +317,7 @@ public class PostFragment extends Fragment{
   /**
    * We set repost field to GONE so if view was recycled - it will be empty.
    */
-  private void initRepost(){
+  private void initRepost() {
     feed_llPostRepost.setVisibility(View.GONE);
   }
 

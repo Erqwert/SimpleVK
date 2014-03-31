@@ -32,7 +32,7 @@ import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 @EFragment(R.layout.fragment_feed)
-public class FeedsFragment extends Fragment implements OnRefreshListener{
+public class FeedsFragment extends Fragment implements OnRefreshListener {
 
   @ViewById
   protected PullToRefreshLayout feed_pullToRefreshLayout;
@@ -68,17 +68,18 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   /**
    * After user Pulls Pull-to-refresh - we launch a background task to get Feeds or
    * show toast with error if network is unavailable.
+   *
    * @param view
    */
   @Override
   public void onRefreshStarted(View view) {
-    if(Utils.isNetworkAvailable(getActivity())){
+    if (Utils.isNetworkAvailable(getActivity())) {
       feeds_loading = true;
       current_position = 0;
       top_position = 0;
       feedListAdapter.resetVkFeeds();
       feedsTasksFragment.getFeeds(null);
-    }else{
+    } else {
       feeds_loading = false;
       feed_pullToRefreshLayout.setRefreshComplete();
       Toast.makeText(getActivity(), "Сеть недоступна", Toast.LENGTH_SHORT).show();
@@ -91,6 +92,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
   /**
    * Setting callbacks to activity
+   *
    * @param activity
    */
   @Override
@@ -112,19 +114,20 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
    * Here we set Logout Action Item on
    */
   @AfterViews
-  protected void init(){
+  protected void init() {
     setHasOptionsMenu(true);
   }
 
   /**
    * Here we cache Feeds to Bundle for screen rotation etc.
+   *
    * @param outState
    */
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
-    if(null != vkFeeds) {
+    if (null != vkFeeds) {
       // Saving state of current position and top position to Bundle
       outState.putInt(FEEDS_LIST_CURRENT_POSITION_TAG, feed_ListView.getFirstVisiblePosition());
       outState.putInt(FEEDS_LIST_TOP_POSITION_TAG, getTopPosition());
@@ -140,9 +143,10 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
   /**
    * Calculates top position of the feed_ListView
+   *
    * @return feed_ListView top position
    */
-  private int getTopPosition(){
+  private int getTopPosition() {
     View v = feed_ListView.getChildAt(0);
     return (v == null) ? 0 : v.getTop();
   }
@@ -151,6 +155,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
    * Setting retain fragment for Background tasks, initializing Pull-to-refresh and
    * load cached Feeds if available (for example after screen rotation) or initiating
    * fresh Feeds load
+   *
    * @param savedInstanceState
    */
   @Override
@@ -176,7 +181,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       .listener(this)
       .setup(feed_pullToRefreshLayout);
 
-    if(null != savedInstanceState){
+    if (null != savedInstanceState) {
       vkFeeds = savedInstanceState.getParcelableArrayList(FEEDS_LIST_CONTENT_TAG);
       new_from = savedInstanceState.getString(FEEDS_LIST_NEW_FROM_TAG);
       current_position = savedInstanceState.getInt(FEEDS_LIST_CURRENT_POSITION_TAG);
@@ -185,18 +190,18 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       feedListAdapter.setVkFeeds(vkFeeds);
       feed_ListView.setSelectionFromTop(current_position, top_position);
 
-    }else {
+    } else {
       initAdapter();
     }
 
-    feed_ListView.setOnScrollListener(new AbsListView.OnScrollListener(){
-      boolean isScrolling=false;
+    feed_ListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+      boolean isScrolling = false;
 
       @Override
       public void onScrollStateChanged(AbsListView view, int scrollState) {
-        if(scrollState != SCROLL_STATE_IDLE){
+        if (scrollState != SCROLL_STATE_IDLE) {
           isScrolling = true;
-        }else{
+        } else {
           isScrolling = false;
         }
       }
@@ -205,7 +210,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
       public void onScroll(AbsListView view, int firstVisibleItem,
                            int visibleItemCount, int totalItemCount) {
 
-        if(isScrolling) {
+        if (isScrolling) {
           int lastInScreen = firstVisibleItem + visibleItemCount;
           if ((lastInScreen >= totalItemCount) && !(feeds_loading)) {
             feeds_loading = true;
@@ -221,8 +226,8 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   /**
    * Starts Background task for Feeds download and display
    */
-  public void initAdapter(){
-    if(Utils.isNetworkAvailable(getActivity())){
+  public void initAdapter() {
+    if (Utils.isNetworkAvailable(getActivity())) {
       feeds_loading = true;
       feedsTasksFragment.getFeeds(new_from);
     }
@@ -237,6 +242,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   /**
    * Logout implementation. Calling MainActivity's onLogout as long as VKSdk.logout (this
    * removes access_token from SharedPreferences so we can log as another user).
+   *
    * @param item
    * @return
    */
@@ -244,7 +250,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.actionFeed_fragment_logout:
-        if(null != feedFragmentCallbacks){
+        if (null != feedFragmentCallbacks) {
           VKSdk.logout(getActivity());
           feedFragmentCallbacks.onLogout();
         }
@@ -255,24 +261,25 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
   /**
    * Updating UI by setting adapter and stopping refreshing animation.
+   *
    * @param vkFeeds
    */
   @UiThread
-  public void processVKResponseParsedResult(final ArrayList<VKFeed> vkFeeds, String new_from, String new_offset){
+  public void processVKResponseParsedResult(final ArrayList<VKFeed> vkFeeds, String new_from, String new_offset) {
     // Check list for null
-    if(null!=vkFeeds){
-      if(vkFeeds.size()!=0){
+    if (null != vkFeeds) {
+      if (vkFeeds.size() != 0) {
         this.vkFeeds = vkFeeds;
         this.new_from = new_from;
         this.new_offset = new_offset;
       }
-    }else{
+    } else {
       Toast.makeText(getActivity(), "Во время обновления ленты произошла ошибка.", Toast.LENGTH_SHORT).show();
     }
 
     feed_ListView.setAdapter(feedListAdapter);
     feedListAdapter.setVkFeeds(vkFeeds);
-    if (current_position != 0){
+    if (current_position != 0) {
       feed_ListView.setSelectionFromTop(current_position, top_position);
     }
 
@@ -282,7 +289,7 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
     feeds_loading = false;
 
-    if(feed_pullToRefreshLayout.isRefreshing()){
+    if (feed_pullToRefreshLayout.isRefreshing()) {
       feed_pullToRefreshLayout.setRefreshComplete();
     }
   }
@@ -296,13 +303,13 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 //    }else{
 //      id="-" + String.valueOf(vkFeed.source_id) + "_" + String.valueOf(vkFeed.post_id);
 //    }
-    current_position =  feed_ListView.getFirstVisiblePosition();
+    current_position = feed_ListView.getFirstVisiblePosition();
     top_position = getTopPosition();
 
     feedsTasksFragment.getPost(vkFeed);
   }
 
-  public void setPosition(){
+  public void setPosition() {
     feed_ListView.setSelectionFromTop(current_position, top_position);
   }
 }

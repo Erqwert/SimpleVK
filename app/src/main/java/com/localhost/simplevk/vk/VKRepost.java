@@ -8,9 +8,9 @@ import com.vk.sdk.api.model.VKAttachments;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VKRepost implements Parcelable{
+public class VKRepost implements Parcelable {
 
-  public VKRepost(){
+  public VKRepost() {
 
   }
 
@@ -71,9 +71,10 @@ public class VKRepost implements Parcelable{
 
   /**
    * Setter for vkSourse
+   *
    * @param vkSource
    */
-  public void setSourceData(VKSource vkSource){
+  public void setSourceData(VKSource vkSource) {
     source_id = vkSource.getId();
     source_name = vkSource.getName();
     source_avatar50URL = vkSource.getAvatar50URL();
@@ -144,11 +145,6 @@ public class VKRepost implements Parcelable{
       return new VKRepost[size];
     }
   };
-
-
-
-
-
 
 
 }

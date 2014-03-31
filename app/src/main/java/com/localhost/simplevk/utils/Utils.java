@@ -18,10 +18,11 @@ public class Utils {
 
   /**
    * Sets Feed's body text and make it VISIBLE if needed
+   *
    * @param textView
    * @param text
    */
-  public static void setFeedText(TextView textView, String text){
+  public static void setFeedText(TextView textView, String text) {
     // Todo shorten text if it's too large
     textView.setVisibility(text.equals("") ? View.GONE : View.VISIBLE);
     textView.setText(text);
@@ -29,41 +30,44 @@ public class Utils {
 
   /**
    * Prints date in VKFeed or VKPost
+   *
    * @param textView
    * @param unixTime
    */
-  public static void setFeedDate(TextView textView, long unixTime){
-    long dateTimeInMillis = unixTime*1000;
+  public static void setFeedDate(TextView textView, long unixTime) {
+    long dateTimeInMillis = unixTime * 1000;
 
     Date date = new Date(dateTimeInMillis);
-    if(DateUtils.isToday(dateTimeInMillis)){
-      textView.setText("Сегодня в "+new SimpleDateFormat("HH:mm").format(date));
-    }else{
+    if (DateUtils.isToday(dateTimeInMillis)) {
+      textView.setText("Сегодня в " + new SimpleDateFormat("HH:mm").format(date));
+    } else {
       textView.setText(new SimpleDateFormat("dd MMMM").format(date) + " в " + new SimpleDateFormat("HH:mm").format(date));
     }
   }
 
   /**
    * Static method to hide Software Keyboard
+   *
    * @param activity
    */
   public static void hideSoftKeyboard(Activity activity) {
-    InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-    if(null!=activity.getCurrentFocus().getWindowToken()) {
+    InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    if (null != activity.getCurrentFocus().getWindowToken()) {
       inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
   }
 
   /**
    * Static method to remove focus from any view in @param group and hide keyboard
+   *
    * @param activity
-   * @param group in which focus should be removed
+   * @param group    in which focus should be removed
    */
-  public static void removeFocusFromEditTexts(Activity activity, int group){
+  public static void removeFocusFromEditTexts(Activity activity, int group) {
     hideSoftKeyboard(activity);
-    ViewGroup mygroup = (ViewGroup)activity.findViewById(group);
-    int count=0;
-    if(mygroup.getChildCount()>0) {
+    ViewGroup mygroup = (ViewGroup) activity.findViewById(group);
+    int count = 0;
+    if (mygroup.getChildCount() > 0) {
       count = mygroup.getChildCount();
       for (int i = 0; i < count; ++i) {
         View view = mygroup.getChildAt(i);
@@ -78,11 +82,11 @@ public class Utils {
 
   /**
    * Static method to check if Network is available
+   *
    * @param context
    * @return true if enabled, false otherwise
    */
-  public static boolean isNetworkAvailable(Context context)
-  {
+  public static boolean isNetworkAvailable(Context context) {
     ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo netInfo = cm.getActiveNetworkInfo();
     return netInfo != null && netInfo.isConnectedOrConnecting();

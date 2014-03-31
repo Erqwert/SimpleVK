@@ -79,11 +79,12 @@ public class FeedsItemView extends RelativeLayout {
 
   public FeedsItemView(Context context) {
     super(context);
-    this.context=context;
+    this.context = context;
   }
 
   /**
    * We set UI of each Feed here. Setting icons, names, texts, counts, photos, reposts etc.
+   *
    * @param vkFeed
    */
   public void bind(VKFeed vkFeed) {
@@ -103,16 +104,16 @@ public class FeedsItemView extends RelativeLayout {
     // Set feed text
     Utils.setFeedText(feed_tvText, vkFeed.text);
     // Set attachments
-    if(null != vkFeed.attachments) {
+    if (null != vkFeed.attachments) {
       setAttachments(vkFeed.attachments);
     }
 
     // Repost
-    if(null != vkFeed.copy_history){
+    if (null != vkFeed.copy_history) {
       feed_llRepost.addView(getRepostView(vkFeed.copy_history.get(0)));
       //Log.i("copies: ", vkFeed.copy_history.size()+"");
       feed_llRepost.setVisibility(VISIBLE);
-    }else{
+    } else {
       initRepost();
     }
 
@@ -131,10 +132,11 @@ public class FeedsItemView extends RelativeLayout {
 
   /**
    * RepostView constructor - we make new RepostView object and fill it with data
+   *
    * @param vkRepost
    * @return RepostView object
    */
-  private RepostView getRepostView(VKRepost vkRepost){
+  private RepostView getRepostView(VKRepost vkRepost) {
     RepostView repostView = RepostView_.build(context);
 
     repostView.bind(vkRepost);
@@ -143,25 +145,27 @@ public class FeedsItemView extends RelativeLayout {
 
   /**
    * Set and display Feed's attachments (not complete)
+   *
    * @param attachments
    */
-  private void setAttachments(VKAttachments attachments){
+  private void setAttachments(VKAttachments attachments) {
     boolean has1stPhoto = false;
     boolean hasLink = false;
     initAttachments();
 
-    for(VKAttachments.VKApiAttachment attachment : attachments){
-      switch(attachment.getType()){
+    for (VKAttachments.VKApiAttachment attachment : attachments) {
+      switch (attachment.getType()) {
         case VKAttachments.TYPE_PHOTO:
-          if(!has1stPhoto){
+          if (!has1stPhoto) {
             Transformation transformation = new Transformation() {
 
-              @Override public Bitmap transform(Bitmap source) {
+              @Override
+              public Bitmap transform(Bitmap source) {
                 int targetWidth = feed_llPhotoAttachments.getWidth();
 
                 double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
                 int targetHeight = (int) (targetWidth * aspectRatio);
-                if(source.getHeight() >= source.getWidth()){
+                if (source.getHeight() >= source.getWidth()) {
                   return source;
                 }
                 Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
@@ -172,20 +176,21 @@ public class FeedsItemView extends RelativeLayout {
                 return result;
               }
 
-              @Override public String key() {
+              @Override
+              public String key() {
                 return "transformation" + " desiredWidth";
               }
             };
-            Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
+            Picasso.with(context).load(((VKApiPhoto) attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
             feed_llPhotoAttachments.setVisibility(VISIBLE);
             has1stPhoto = true;
           }
           break;
         case VKAttachments.TYPE_LINK:
-          if(!hasLink) {
-            if(((VKApiLink) attachment).title.equals("")) {
+          if (!hasLink) {
+            if (((VKApiLink) attachment).title.equals("")) {
               feed_tvLinkName.setText("Ссылка");
-            }else{
+            } else {
               feed_tvLinkName.setText(((VKApiLink) attachment).title);
             }
             String url = ((VKApiLink) attachment).url;
@@ -206,7 +211,7 @@ public class FeedsItemView extends RelativeLayout {
   /**
    * We set attachments field to GONE so if view was recycled - it will be empty.
    */
-  private void initAttachments(){
+  private void initAttachments() {
     feed_llPhotoAttachments.setVisibility(GONE);
     feed_llLinkAttachments.setVisibility(GONE);
   }
@@ -214,7 +219,7 @@ public class FeedsItemView extends RelativeLayout {
   /**
    * We set repost field to GONE so if view was recycled - it will be empty.
    */
-  private void initRepost(){
+  private void initRepost() {
     feed_llRepost.setVisibility(GONE);
   }
 }

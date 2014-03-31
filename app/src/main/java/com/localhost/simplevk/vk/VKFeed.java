@@ -13,9 +13,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class VKFeed implements Parcelable{
+public class VKFeed implements Parcelable {
 
-  public VKFeed(){
+  public VKFeed() {
 
   }
 
@@ -121,9 +121,10 @@ public class VKFeed implements Parcelable{
 
   /**
    * Setter for vkSourse
+   *
    * @param vkSource
    */
-  public void setSourceData(VKSource vkSource){
+  public void setSourceData(VKSource vkSource) {
     source_id = vkSource.getId();
     source_name = vkSource.getName();
     source_avatar50URL = vkSource.getAvatar50URL();
@@ -140,19 +141,19 @@ public class VKFeed implements Parcelable{
     date = source.optLong("date");
     text = source.optString("text");
     JSONObject comments = source.optJSONObject("comments");
-    if(null != comments) {
+    if (null != comments) {
       comments_count = comments.optInt("count");
       can_post_comment = ParseUtils.parseBoolean(comments, "can_post");
     }
     JSONObject likes = source.optJSONObject("likes");
-    if(null != likes) {
+    if (null != likes) {
       likes_count = likes.optInt("count");
       user_likes = ParseUtils.parseBoolean(likes, "user_likes");
       can_like = ParseUtils.parseBoolean(likes, "can_like");
       can_publish = ParseUtils.parseBoolean(likes, "can_publish");
     }
     JSONObject reposts = source.optJSONObject("reposts");
-    if(null != reposts) {
+    if (null != reposts) {
       reposts_count = reposts.optInt("count");
       user_reposted = ParseUtils.parseBoolean(reposts, "user_reposted");
     }
@@ -161,12 +162,12 @@ public class VKFeed implements Parcelable{
     attachments.fill(source.optJSONArray("attachments"));
 
     JSONObject geo = source.optJSONObject("geo");
-    if(null != geo) {
+    if (null != geo) {
       this.geo = new VKApiPlace().parse(geo);
     }
 
     JSONArray history = source.optJSONArray("copy_history");
-    if (null != history){
+    if (null != history) {
       copy_history = new ArrayList<>();
       for (int i = 0; i < history.length(); i++) {
         VKRepost vkRepost = new VKRepost();
