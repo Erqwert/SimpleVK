@@ -1,8 +1,8 @@
-package com.localhost.simplevk.feed;
+package com.localhost.simplevk.post;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v7.widget.GridLayout;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -10,60 +10,59 @@ import android.widget.TextView;
 
 import com.localhost.simplevk.R;
 import com.localhost.simplevk.utils.Utils;
-import com.localhost.simplevk.vk.VKFeed;
-import com.localhost.simplevk.vk.VKRepost;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiComment;
 import com.vk.sdk.api.model.VKApiLink;
 import com.vk.sdk.api.model.VKApiPhoto;
 import com.vk.sdk.api.model.VKAttachments;
 
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+import org.json.JSONArray;
+import org.json.JSONException;
 
-@EViewGroup(R.layout.feeds_item)
-public class FeedsItemView extends RelativeLayout {
-
+@EViewGroup(R.layout.comment_item)
+public class CommentView extends RelativeLayout{
   Context context;
 
-  @ViewById
-  protected RelativeLayout feed_rlFeedContainer;
+  VKRequest getUserRequest;
+
+  public CommentView(Context context) {
+    super(context);
+  }
 
   @ViewById
-  protected ImageView feed_ivAvatar;
+  protected ImageView post_ivCommenterAvatar;
 
   @ViewById
-  protected TextView feed_tvName;
+  protected TextView post_tvCommenterName;
 
   @ViewById
-  protected TextView feed_tvDate;
+  protected TextView post_tvCommentDate;
 
   @ViewById
-  protected TextView feed_tvText;
+  protected TextView post_tvCommentText;
 
   @ViewById
-  protected TextView feed_tvCommentsCount;
+  protected TextView post_tvCommentLikesCount;
 
   @ViewById
-  protected TextView feed_tvRepostsCount;
-
-  @ViewById
-  protected TextView feed_tvLikesCount;
-
-  @ViewById
-  protected ImageView feed_ivLikeIcon;
-
-  @ViewById
-  protected ImageView feed_iv1stPhotoAttachment;
+  protected ImageView feed_ivPostLikeIcon;
 
   @ViewById
   protected LinearLayout feed_llPhotoAttachments;
 
   @ViewById
-  protected GridLayout feed_glPhotoAttachments;
+  protected LinearLayout feed_llLinkAttachments;
 
   @ViewById
-  protected LinearLayout feed_llLinkAttachments;
+  protected ImageView feed_iv1stPhotoAttachment;
 
   @ViewById
   protected TextView feed_tvLinkName;
@@ -71,78 +70,36 @@ public class FeedsItemView extends RelativeLayout {
   @ViewById
   protected TextView feed_tvLinkURL;
 
-  @ViewById
-  protected LinearLayout feed_llFooter;
-
-  @ViewById
-  protected LinearLayout feed_llRepost;
-
-  public FeedsItemView(Context context) {
-    super(context);
-    this.context=context;
-  }
-
   /**
-   * We set UI of each Feed here. Setting icons, names, texts, counts, photos, reposts etc.
-   * @param vkFeed
+   * We set UI of each VKApiComment. Setting icons, names, texts, counts, photos etc.
+   * @param vkComment
    */
-  public void bind(VKFeed vkFeed) {
+  public void bind(VKApiComment vkComment) {
+
     // Header
-
-    // Set avatar from URL
-    Picasso.with(context).load(vkFeed.source_avatar100URL).into(feed_ivAvatar);
-    // Set group/user name
-    feed_tvName.setText(vkFeed.source_name);
-    // Set feed date
-    Utils.setFeedDate(feed_tvDate, vkFeed.date);
-
+    getAvatarAndName(vkComment.from_id);
 
     // Body
 
-
     // Set feed text
-    Utils.setFeedText(feed_tvText, vkFeed.text);
+    Utils.setFeedText(post_tvCommentText, vkComment.text);
     // Set attachments
-    if(null != vkFeed.attachments) {
-      setAttachments(vkFeed.attachments);
-    }
-
-    // Repost
-    if(null != vkFeed.copy_history){
-      feed_llRepost.addView(getRepostView(vkFeed.copy_history.get(0)));
-      //Log.i("copies: ", vkFeed.copy_history.size()+"");
-      feed_llRepost.setVisibility(VISIBLE);
-    }else{
-      initRepost();
+    if(null != vkComment.attachments) {
+      setAttachments(vkComment.attachments);
     }
 
 
     // Footer
-
-    // Set feed's comments count
-    feed_tvCommentsCount.setText(String.valueOf(vkFeed.comments_count));
-    // Set feed's reposts count
-    feed_tvRepostsCount.setText(String.valueOf(vkFeed.reposts_count));
+    // Set feed date
+    Utils.setFeedDate(post_tvCommentDate, vkComment.date);
     // Set feed's likes count
-    feed_tvLikesCount.setText(String.valueOf(vkFeed.likes_count));
+    post_tvCommentLikesCount.setText(String.valueOf(vkComment.likes));
     // Set liked icon
-    feed_ivLikeIcon.setImageResource(vkFeed.user_likes ? R.drawable.liked : R.drawable.like);
+    feed_ivPostLikeIcon.setImageResource(vkComment.user_likes ? R.drawable.liked : R.drawable.like);
   }
 
   /**
-   * RepostView constructor - we make new RepostView object and fill it with data
-   * @param vkRepost
-   * @return RepostView object
-   */
-  private RepostView getRepostView(VKRepost vkRepost){
-    RepostView repostView = RepostView_.build(context);
-
-    repostView.bind(vkRepost);
-    return repostView;
-  }
-
-  /**
-   * Set and display Feed's attachments (not complete)
+   * Set and display Comments's attachments
    * @param attachments
    */
   private void setAttachments(VKAttachments attachments){
@@ -211,10 +168,59 @@ public class FeedsItemView extends RelativeLayout {
     feed_llLinkAttachments.setVisibility(GONE);
   }
 
+
   /**
-   * We set repost field to GONE so if view was recycled - it will be empty.
+   * Background method which loads user data and parse it onComplete
+   * @param id
    */
-  private void initRepost(){
-    feed_llRepost.setVisibility(GONE);
+  @Background
+  public void getAvatarAndName(int id){
+    getUserRequest = new VKRequest("users.get", VKParameters.from("user_ids", String.valueOf(id), "fields", "photo_100"));
+    getUserRequest.executeWithListener(new VKRequest.VKRequestListener() {
+      @Override
+      public void onComplete(VKResponse response) {
+        super.onComplete(response);
+        Log.i("getAvatarAndName", "VKResponse: " + response.json.toString());
+        parseGetUserResponse(response);
+      }
+
+      @Override
+      public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
+        super.attemptFailed(request, attemptNumber, totalAttempts);
+      }
+
+      @Override
+      public void onError(VKError error) {
+        super.onError(error);
+        //Log.i("Error", error.errorReason);
+        //Log.i("Error", error.errorMessage);
+      }
+
+      @Override
+      public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
+        super.onProgress(progressType, bytesLoaded, bytesTotal);
+      }
+    });
+  }
+
+  /**
+   * Method parses VKResponse from get user data and updates Comments UI
+   * (avatars and names)
+   * @param response
+   */
+  public void parseGetUserResponse(VKResponse response){
+    try{
+      JSONArray jsonArrayOfUsers = response.json.getJSONArray("response");
+
+      String last_name = jsonArrayOfUsers.getJSONObject(0).optString("last_name");
+      String first_name = jsonArrayOfUsers.getJSONObject(0).optString("first_name");
+      post_tvCommenterName.setText(first_name + " " + last_name);
+
+      String URL = jsonArrayOfUsers.getJSONObject(0).optString("photo_100");
+      Picasso.with(context).load(URL).into(post_ivCommenterAvatar);
+
+    }catch (JSONException e) {
+      Log.e("getAvatarAndName", String.valueOf(e.getMessage()));
+    }
   }
 }

@@ -79,20 +79,4 @@ public class FeedListAdapter extends BaseAdapter{
   public void resetVkFeeds(){
     this.vkFeeds = new ArrayList<>();
   }
-
-//  /**
-//   * Easy hack to make list items unselectable.
-//   * @return
-//   */
-//  public boolean areAllItemsEnabled() {
-//    return false;
-//  }
-//
-//  /**
-//   * Easy hack to make list items unselectable.
-//   * @return
-//   */
-//  public boolean isEnabled(int position) {
-//    return false;
-//  }
 }

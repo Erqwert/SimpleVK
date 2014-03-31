@@ -126,10 +126,8 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 
     if(null != vkFeeds) {
       // Saving state of current position and top position to Bundle
-
       outState.putInt(FEEDS_LIST_CURRENT_POSITION_TAG, feed_ListView.getFirstVisiblePosition());
       outState.putInt(FEEDS_LIST_TOP_POSITION_TAG, getTopPosition());
-
 
       // Saving vkFeeds list to Bundle
       vkFeeds = feedListAdapter.getFeeds();
@@ -298,6 +296,13 @@ public class FeedsFragment extends Fragment implements OnRefreshListener{
 //    }else{
 //      id="-" + String.valueOf(vkFeed.source_id) + "_" + String.valueOf(vkFeed.post_id);
 //    }
+    current_position =  feed_ListView.getFirstVisiblePosition();
+    top_position = getTopPosition();
+
     feedsTasksFragment.getPost(vkFeed);
+  }
+
+  public void setPosition(){
+    feed_ListView.setSelectionFromTop(current_position, top_position);
   }
 }

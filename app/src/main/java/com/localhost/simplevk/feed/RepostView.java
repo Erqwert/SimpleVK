@@ -1,6 +1,7 @@
 package com.localhost.simplevk.feed;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -11,6 +12,7 @@ import com.localhost.simplevk.R;
 import com.localhost.simplevk.utils.Utils;
 import com.localhost.simplevk.vk.VKRepost;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.vk.sdk.api.model.VKApiLink;
 import com.vk.sdk.api.model.VKApiPhoto;
 import com.vk.sdk.api.model.VKAttachments;
@@ -59,7 +61,7 @@ public class RepostView extends RelativeLayout {
   protected TextView feed_tvLinkURL;
 
   /**
-   * We set UI of each Feed here. Setting icons, names, texts, counts, photos, reposts etc.
+   * We set UI of each repost here. Setting icons, names, texts, counts, photos etc.
    * @param vkRepost
    */
   public void bind(VKRepost vkRepost) {
@@ -85,7 +87,7 @@ public class RepostView extends RelativeLayout {
   }
 
   /**
-   * Set and display Feed's attachments (not complete)
+   * Set and display Reposts's attachments
    * @param attachments
    */
   private void setAttachments(VKAttachments attachments){
@@ -93,13 +95,33 @@ public class RepostView extends RelativeLayout {
     boolean hasLink = false;
     initAttachments();
 
-    Picasso.with(context).setDebugging(true);
-
     for(VKAttachments.VKApiAttachment attachment : attachments){
       switch(attachment.getType()){
         case VKAttachments.TYPE_PHOTO:
           if(!has1stPhoto){
-            Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).into(feed_iv1stPhotoAttachment);
+            Transformation transformation = new Transformation() {
+
+              @Override public Bitmap transform(Bitmap source) {
+                int targetWidth = feed_llPhotoAttachments.getWidth();
+
+                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
+                int targetHeight = (int) (targetWidth * aspectRatio);
+                if(source.getHeight() >= source.getWidth()){
+                  return source;
+                }
+                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
+                if (result != source) {
+                  // Same bitmap is returned if sizes are the same
+                  source.recycle();
+                }
+                return result;
+              }
+
+              @Override public String key() {
+                return "transformation" + " desiredWidth";
+              }
+            };
+            Picasso.with(context).load(((VKApiPhoto)attachment).photo_604).transform(transformation).into(feed_iv1stPhotoAttachment);
             feed_llPhotoAttachments.setVisibility(VISIBLE);
             has1stPhoto = true;
           }

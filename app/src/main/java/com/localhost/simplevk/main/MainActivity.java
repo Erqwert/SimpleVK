@@ -11,6 +11,7 @@ import com.localhost.simplevk.R;
 import com.localhost.simplevk.authentication.AuthenticationFragment_;
 import com.localhost.simplevk.feed.FeedsFragment;
 import com.localhost.simplevk.feed.FeedsTasksFragment;
+import com.localhost.simplevk.post.PostFragment;
 import com.localhost.simplevk.post.PostFragment_;
 import com.localhost.simplevk.utils.FragmentSavedState;
 import com.localhost.simplevk.vk.VKFeed;
@@ -18,9 +19,9 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.model.VKApiComment;
 
 import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 
@@ -74,11 +75,6 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
   @AfterInject
   protected void init() {
     initVKSdkListener();
-  }
-
-  @AfterViews
-  protected void initViews(){
-
   }
 
   @Override
@@ -216,10 +212,18 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     };
   }
 
+  /**
+   * After we Pop Backstack bein in PostFragment - we update currentFragmentId and
+   * restore visible position of the List
+   */
   @Override
   public void onBackPressed() {
     super.onBackPressed();
     currentFragmentId = R.id.fragment_feeds;
+    Fragment feedsFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);
+    if (feedsFragment instanceof FeedsFragment) {
+      ((FeedsFragment)feedsFragment).setPosition();
+    }
   }
 
   /**
@@ -271,9 +275,25 @@ public class MainActivity extends ActionBarActivity implements FragmentSavedStat
     }
   }
 
+  /**
+   * Callback metod - after we got feed from asyncTask - we update show fragment_post.
+   * @param vkFeed
+   */
   @Override
   public void onGetPostRequest(VKFeed vkFeed) {
     this.vkFeed = vkFeed;
     goToFragment(R.id.fragment_post);
+  }
+
+  /**
+   * Callback metod - after we got comments from asyncTask - we update UI.
+   * @param vkComments
+   */
+  @Override
+  public void onGetComments(ArrayList<VKApiComment> vkComments) {
+    Fragment postFragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_container);
+    if (postFragment instanceof PostFragment) {
+      ((PostFragment)postFragment).processCommentsParsedResult(vkComments);
+    }
   }
 }

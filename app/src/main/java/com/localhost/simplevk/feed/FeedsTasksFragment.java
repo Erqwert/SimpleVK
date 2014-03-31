@@ -12,6 +12,7 @@ import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiComment;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Background;
@@ -26,16 +27,21 @@ import java.util.ArrayList;
 public class FeedsTasksFragment extends Fragment{
 
   VKRequest newsFeedRequest;
-  VKRequest postRequest;
-  private static final int VKREQUEST_FEEDS_COUNT = 5;
+  VKRequest commentsRequest;
+
+  private static final int VKREQUEST_FEEDS_COUNT = 20;
 
   private static final String TAG = "FeedsTasksFragment";
 
   private GetFeedsActivityCallbacks getFeedsActivityCallbacks;
 
+  /**
+   * Callbacks for MainActivity
+   */
   public static interface GetFeedsActivityCallbacks {
     void onVKResponseParsed(ArrayList<VKFeed> VKFeeds, String new_from, String new_offset);
     void onGetPostRequest(VKFeed vkFeed);
+    void onGetComments(ArrayList<VKApiComment> vkComments);
   }
 
   @AfterInject
@@ -88,7 +94,7 @@ public class FeedsTasksFragment extends Fragment{
       public void onComplete(VKResponse response) {
         super.onComplete(response);
         Log.i(TAG, "VKResponse: " + response.json.toString());
-        parseVKResponse(response);
+        parseGetFeedsResponse(response);
       }
 
       @Override
@@ -110,13 +116,52 @@ public class FeedsTasksFragment extends Fragment{
     });
   }
 
-  @Background
   public void getPost(VKFeed vkFeed){
-    //Log.i(TAG, "id: " + id);
-    //postRequest = new VKRequest("wall.getById", VKParameters.from("posts", id, "extended", 1, "copy_history_depth", 1));
     if(null!=getFeedsActivityCallbacks) {
       getFeedsActivityCallbacks.onGetPostRequest(vkFeed);
     }
+  }
+
+  /**
+   * Background task to getComments. Starts parsing method
+   * parseGetCommentsResponse(response) onComplete
+   */
+  @Background
+  public void getComments(VKFeed vkFeed){
+
+    int ownerId;
+    if(vkFeed.isUserFeed){
+      ownerId = vkFeed.source_id;
+    }else{
+      ownerId = -vkFeed.source_id;
+    }
+
+    commentsRequest = new VKRequest("wall.getComments", VKParameters.from("owner_id", ownerId, "post_id", vkFeed.post_id, "need_likes", 1, "preview_length", 0));
+    commentsRequest.executeWithListener(new VKRequest.VKRequestListener() {
+      @Override
+      public void onComplete(VKResponse response) {
+        super.onComplete(response);
+        Log.i(TAG, "VKResponse: " + response.json.toString());
+        parseGetCommentsResponse(response);
+      }
+
+      @Override
+      public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
+        super.attemptFailed(request, attemptNumber, totalAttempts);
+      }
+
+      @Override
+      public void onError(VKError error) {
+        super.onError(error);
+        //Log.i("Error", error.errorReason);
+        Log.i("Error", error.errorMessage);
+      }
+
+      @Override
+      public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
+        super.onProgress(progressType, bytesLoaded, bytesTotal);
+      }
+    });
   }
 
 
@@ -125,7 +170,7 @@ public class FeedsTasksFragment extends Fragment{
    * @param response
    */
   @Background
-  public void parseVKResponse(VKResponse response){
+  public void parseGetFeedsResponse(VKResponse response){
     ArrayList<VKFeed> vkFeeds = new ArrayList<>();
     ArrayList<VKSource> vkSources = new ArrayList<>();
     String new_from="";
@@ -204,25 +249,30 @@ public class FeedsTasksFragment extends Fragment{
     }
   }
 
-//  @Background
-//  public void parseVKPost(VKResponse vkResponse){
-//    ArrayList<VKSource> vkSources = new ArrayList<>();
-//
-//    try {
-//      JSONObject jsonResponse = vkResponse.json.getJSONObject("response");
-//
-//
-//
-//    } catch (JSONException e) {
-//      Log.e(TAG, String.valueOf(e.getMessage()));
-//    }
-//
-//
-//    //When parsing is done - notify MainActivity
-//    if(null!=getFeedsActivityCallbacks) {
-//      getFeedsActivityCallbacks.onVKResponseParsed(vkFeeds, new_from, new_offset);
-//    }
-//  }
+  /**
+   * Here we parse response and send result to MainActivity
+   * @param response
+   */
+  @Background
+  public void parseGetCommentsResponse(VKResponse response){
+    ArrayList<VKApiComment> vkComments = new ArrayList<>();
 
+    try {
+      JSONObject jsonResponse = response.json.getJSONObject("response");
+      // Fill VKComments
+      JSONArray jsonArrayOfComments = jsonResponse.getJSONArray("items");
+      for (int i = 0; i < jsonArrayOfComments.length(); i++) {
+        VKApiComment vkComment = new VKApiComment();
+        vkComment.parse(jsonArrayOfComments.getJSONObject(i));
+        vkComments.add(vkComment);
+      }
 
+    }catch (JSONException e) {
+      Log.e(TAG, String.valueOf(e.getMessage()));
+    }
+
+    if(null!=getFeedsActivityCallbacks) {
+      getFeedsActivityCallbacks.onGetComments(vkComments);
+    }
+  }
 }

@@ -16,7 +16,6 @@
     <ImageView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:src="@drawable/ic_anabolism"
       android:id="@+id/feed_ivAvatar"/>
 
     <LinearLayout
@@ -30,7 +29,6 @@
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ANABOLISM"
         android:drawableLeft="@drawable/repost_80"
         android:maxLines="1"
         android:textSize="18sp"
@@ -39,7 +37,6 @@
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="20 минут назад"
         android:textColor="@color/authEditTextHintColor"
         android:textSize="13sp"
         android:id="@+id/feed_tvDate" />

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:paddingTop="4dp"
+  android:paddingLeft="4dp"
+  android:paddingRight="4dp"
+  android:background="@color/White">
+
+  <ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/post_ivCommenterAvatar"/>
+
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="4dp"
+    android:orientation="vertical"
+    android:id="@+id/post_llBody"
+    android:layout_toRightOf="@+id/post_ivCommenterAvatar">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:maxLines="1"
+      android:textSize="18sp"
+      android:id="@+id/post_tvCommenterName" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:id="@+id/post_tvCommentText"/>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="2dp"
+      android:orientation="vertical"
+      android:visibility="gone"
+      android:id="@+id/feed_llPhotoAttachments">
+
+      <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/feed_iv1stPhotoAttachment"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="3dp"
+      android:orientation="horizontal"
+      android:visibility="gone"
+      android:id="@+id/feed_llLinkAttachments">
+
+      <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/link_60"
+        android:id="@+id/feed_ivLinkIcon"/>
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:maxLines="1"
+          android:id="@+id/feed_tvLinkName" />
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:maxLines="1"
+          android:textColor="@color/authEditTextHintColor"
+          android:textSize="13sp"
+          android:id="@+id/feed_tvLinkURL" />
+      </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/post_rlCommentFooter">
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/authEditTextHintColor"
+      android:textSize="13sp"
+      android:layout_centerVertical="true"
+      android:id="@+id/post_tvCommentDate" />
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="5dp"
+      android:orientation="horizontal"
+      android:layout_centerVertical="true"
+      android:id="@+id/post_llCommentLikes"
+      android:layout_alignParentRight="true">
+
+      <ImageView
+        style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+        android:paddingTop="2dp"
+        android:src="@drawable/like"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:id="@+id/feed_ivPostLikeIcon"
+        />
+
+      <TextView
+        style="@style/AppTheme.TextView.FeedsItemFooterCounts"
+        android:id="@+id/post_tvCommentLikesCount"/>
+
+    </LinearLayout>
+    </RelativeLayout>
+
+    </LinearLayout>
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="3dp"
+    android:layout_alignParentBottom="true"
+    android:id="@+id/post_vDivider"
+    android:background="@color/feed_footerDivider" />
+
+
+</RelativeLayout>
