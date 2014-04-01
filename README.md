@@ -19,6 +19,7 @@ LIBRARIES USED:
 - AndroidAnnotations
 - Support Library
 - VK-Android-SDK
+- Pull-to-Refresh
 
 KNOWN BUGS:
 - NullPointerException after 2x rotate in PostFragment (Feed fragment isHidden
